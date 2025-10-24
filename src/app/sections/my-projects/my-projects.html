@@ -1,0 +1,36 @@
+<h3 class="text-4xl uppercase hightlight-full w-fit relative mx-auto mb-20">
+  Projects
+</h3>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <div
+    class="col-span-1 flex flex-col lg:gap-20 gap-8 text-3xl lg:text-6xl font-bold text-gray-500"
+  >
+    @for (category of categories(); track $index) {
+
+    <h4
+      [class.text-black]="activeCategory() === category.value"
+      class="cursor-pointer hover:text-gray-700 w-fit"
+      (click)="handleCategorySelect(category.value)"
+    >
+      {{ category.label }}
+    </h4>
+    }
+  </div>
+  <div class="col-span-1 overflow-hidden min-h-[800px] relative">
+    <div class="absolute top-0 bottom-[90%] left-0 right-0 overlay-top"></div>
+    <div
+      class="flex flex-col justify-start gap-16 overflow-y-auto pb-20 scroll-auto h-[800px] hide-scrollbar scroll-container"
+    >
+      @for (project of filteredProjects(); track $index) {
+
+      <app-project-card
+        class="project-card"
+        [project]="project"
+      ></app-project-card>
+      }
+    </div>
+    <div
+      class="absolute top-[90%] bottom-0 left-0 right-0 overlay-bottom"
+    ></div>
+  </div>
+</div>

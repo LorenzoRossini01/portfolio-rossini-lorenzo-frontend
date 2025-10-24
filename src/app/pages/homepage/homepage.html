@@ -1,0 +1,48 @@
+<section class="h-fit px-8 lg:px-20 pt-60 flex items-center">
+  <app-hero></app-hero>
+</section>
+<section
+  class="h-fit px-8 lg:px-20 py-60 pt-80 flex flex-col justify-center gap-60"
+  id="about"
+>
+  <app-about-me></app-about-me>
+  <app-skills></app-skills>
+  <div class="flex justify-center w-full">
+    <app-button
+      label="Download Cv"
+      [downloadIcon]="true"
+      (onClick)="handleDownloadCV()"
+    ></app-button>
+  </div>
+</section>
+<section class="h-fit px-8 lg:px-20 py-60" id="works">
+  <app-experience
+    [myExperience]="myPreviousJobs()"
+    title="Works"
+  ></app-experience>
+</section>
+<section class="h-fit px-8 lg:px-20 py-60 flex flex-col gap-60" id="education">
+  <app-experience
+    [myExperience]="myEducation()"
+    title="Education"
+  ></app-experience>
+  <app-experience
+    [myExperience]="myCertification()"
+    title="Certification"
+  ></app-experience>
+  <div class="flex justify-center mt-16 w-full">
+    <app-button
+      label="Download Cv"
+      [downloadIcon]="true"
+      (onClick)="handleDownloadCV()"
+    ></app-button>
+  </div>
+</section>
+
+<section class="h-fit px-8 lg:px-20 py-60" id="projects">
+  <app-my-projects></app-my-projects>
+</section>
+
+<section class="h-fit px-8 lg:px-20 py-60" id="contact">
+  <app-contact-me></app-contact-me>
+</section>

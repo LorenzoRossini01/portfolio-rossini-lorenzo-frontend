@@ -1,0 +1,11 @@
+<div class="w-full">
+  <img
+    [src]="project().cover_image"
+    [alt]="project().title"
+    class="object-fit-cover w-full h-64 mb-4 rounded-lg"
+  />
+  <div>
+    <h6 class="capitalize font-semibold">{{ project().title }}</h6>
+    <p>{{ project().description }}</p>
+  </div>
+</div>

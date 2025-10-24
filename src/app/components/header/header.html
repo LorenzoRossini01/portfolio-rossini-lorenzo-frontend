@@ -1,0 +1,83 @@
+<div class="navbar fixed top-0 left-0 right-0 w-screen bg-white z-50">
+  <div class="flex justify-end lg:justify-between items-center lg:px-20">
+    <!-- Desktop nav -->
+    <ul class="hidden md:flex flex-1">
+      @for (link of headerNavLink(); track $index){
+      <li class="uppercase py-8 font-semibold cursor-pointer">
+        <a
+          [href]="link.path"
+          class="p-8"
+          (click)="scrollToSection(link)"
+          [class.active]="activeLink() === link.label"
+        >
+          {{ link.label }}
+        </a>
+      </li>
+      }
+    </ul>
+
+    <!-- Desktop button -->
+    <div class="hidden md:block">
+      <app-button
+        label="work with me"
+        (click)="handleGotToContact()"
+      ></app-button>
+      <!-- <button
+        (click)="toggleTheme()"
+        class="p-4 rounded-full bg-gray-200 transition"
+        aria-label="Toggle theme"
+      >
+        @if(theme() === 'light'){
+        <span>🌞</span>
+        }@else {
+        <span>🌙</span>
+        }
+      </button> -->
+    </div>
+
+    <!-- Hamburger mobile -->
+    <button
+      class="lg:hidden flex flex-col gap-1 p-8 z-50 relative overflow-visible"
+      (click)="drawerOpen.set(!drawerOpen())"
+    >
+      <span
+        class="w-6 h-0.5 bg-black block transition-all duration-300 origin-center"
+        [class.rotate-45]="drawerOpen()"
+        [class.translate-y-1]="drawerOpen()"
+      ></span>
+      <span
+        class="w-6 h-0.5 bg-black block transition-all duration-300"
+        [class.opacity-0]="drawerOpen()"
+      ></span>
+      <span
+        class="w-6 h-0.5 bg-black block transition-all duration-300 origin-center"
+        [class.-rotate-45]="drawerOpen()"
+        [class.-translate-y-2]="drawerOpen()"
+      ></span>
+    </button>
+  </div>
+
+  <!-- Mobile drawer -->
+  <div
+    class="fixed inset-0 w-screen h-screen bg-white z-40 transform transition-transform duration-300 ease-in-out"
+    [class.translate-x-full]="!drawerOpen()"
+    [class.translate-x-0]="drawerOpen()"
+  >
+    <div class="flex flex-col p-8 gap-8 mt-20 text-center">
+      @for (link of headerNavLink(); track $index) {
+      <a
+        [href]="link.path"
+        (click)="scrollToSection(link); drawerOpen.set(false)"
+        [class.active]="activeLink() === link.label"
+        class="uppercase font-semibold py-4 text-xl hover:text-gray-700 transition"
+      >
+        {{ link.label }}
+      </a>
+      }
+      <app-button
+        label="work with me"
+        (click)="handleGotToContact()"
+      ></app-button>
+    </div>
+  </div>
+</div>

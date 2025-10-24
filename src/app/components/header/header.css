@@ -1,0 +1,11 @@
+.active {
+  background-color: #e8e8e8;
+  color: #333;
+  border: 10px solid;
+  border-image-slice: 1;
+  border-width: 8px;
+  border-image-source: linear-gradient(to right, #00f0ff, #5200ff, #ff1f00);
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+}

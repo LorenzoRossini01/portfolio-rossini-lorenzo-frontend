@@ -1,0 +1,39 @@
+h1,
+h2 {
+  opacity: 1; /* default invisibile, GSAP lo mostra */
+  position: relative;
+  display: inline-block;
+}
+
+h1.visible,
+h2.visible:hover::after {
+  /* la classe .visible viene aggiunta via GSAP se vuoi */
+  /* esempio di striscia sottolineata */
+  --underline-width: 100%;
+}
+
+h1::after,
+h2::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(to right, #00f0ff, #5200ff, #ff1f00);
+  transition: width 0.3s ease;
+
+  opacity: 0; /* invisibile di default */
+  pointer-events: none; /* non intercetta hover */
+}
+
+h1.visible::after,
+h2.visible::after {
+  opacity: 1;
+  pointer-events: auto; /* ora intercetta hover */
+}
+
+h1.visible:hover::after,
+h2.visible:hover::after {
+  width: 100%;
+}

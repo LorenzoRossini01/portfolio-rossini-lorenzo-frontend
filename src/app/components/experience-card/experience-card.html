@@ -1,0 +1,21 @@
+<div #card class="grid grid-cols-2 lg:grid-cols-3">
+  <div
+    class="col-span-2 order-1 lg:order-0 text-justify border-blue-500 pb-8 lg:pl-8 lg:border-l-4"
+  >
+    <h4 class="text-2xl font-semibold">{{ experience().degree }}</h4>
+    <p class="italic">
+      {{ experience().institution }} | {{ experience().period }}
+    </p>
+    <p class="mt-4">{{ experience().details }}</p>
+  </div>
+
+  <div
+    class="col-span-2 lg:col-span-1 pb-8 lg:pb-0 order-0 lg:order-1 flex justify-center"
+  >
+    <img
+      [src]="experience().image"
+      [alt]="experience().institution"
+      class="w-32 h-32 object-contain mt-4 bg-white rounded-full"
+    />
+  </div>
+</div>

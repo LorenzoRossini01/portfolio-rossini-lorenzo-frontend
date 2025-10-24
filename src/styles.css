@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+.highlight:after,
+.hightlight-full:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 6px;
+  width: 100%;
+  background: linear-gradient(to right, #00f0ff, #5200ff, #ff1f00);
+}
+.highlight:after {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease-in-out;
+}
+
+.highlight:hover:after {
+  transform: scaleX(1);
+}
+html,
+body {
+  overflow-x: hidden;
+}
