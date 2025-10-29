@@ -1,6 +1,9 @@
 import { Component, Inject, PLATFORM_ID, signal } from '@angular/core';
 import { Button } from '../../shared/button/button';
 import { isPlatformBrowser } from '@angular/common';
+import { gsap } from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+gsap.registerPlugin(ScrollToPlugin);
 
 @Component({
   selector: 'app-header',
@@ -26,8 +29,15 @@ export class Header {
 
   scrollToSection(link: any) {
     const el = document.querySelector(link.path);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
     this.activeLink.set(link.label);
+
+    if (el) {
+      gsap.to(window, {
+        duration: 2,
+        ease: 'power3.out',
+        scrollTo: { y: link.path, offsetY: 0, autoKill: true },
+      });
+    }
   }
 
   handleGotToContact() {

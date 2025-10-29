@@ -1,4 +1,4 @@
-<section #skillsSection class="w-full">
+<section #skillsSection class="w-full pt-60">
   <h3 class="text-4xl uppercase hightlight-full w-fit relative mx-auto mb-20">
     Skills
   </h3>
@@ -7,14 +7,7 @@
     class="grid items-center justify-center grid-cols-3 lg:grid-cols-5 gap-16"
   >
     @for (skill of mySkills(); track $index){
-    <div class="flex flex-col justify-center w-full h-20 items-center">
-      <img
-        class="w-full h-full mb-4 object-contain"
-        [src]="skill.icon"
-        [alt]="skill.name"
-      />
-      <p class="">{{ skill.name }}</p>
-    </div>
+    <app-skill-item [skill]="skill"></app-skill-item>
     }
   </div>
 </section>

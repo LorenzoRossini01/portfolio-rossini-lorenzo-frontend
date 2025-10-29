@@ -1,86 +1,88 @@
-<h3 class="text-4xl uppercase hightlight-full w-fit relative mx-auto mb-20">
-  Contact me
-</h3>
+<section #contactMe class="h-fit px-8 lg:px-20 py-60" id="contact">
+  <h3 class="text-4xl uppercase hightlight-full w-fit relative mx-auto mb-20">
+    Contact me
+  </h3>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-  <div class="col-span-1 order-1 lg:order-0">
-    <form [formGroup]="contactForm" action="" class="flex flex-col gap-8">
-      <input
-        class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
-        type="text"
-        placeholder="your name"
-        formControlName="name"
-      />
-      <input
-        class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
-        type="text"
-        placeholder="your email"
-        formControlName="email"
-      />
-      <textarea
-        class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
-        rows="4"
-        placeholder="your message"
-        formControlName="message"
-      ></textarea>
-      <div class="flex items-center gap-2">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="contact-form col-span-1 order-1 lg:order-0">
+      <form [formGroup]="contactForm" action="" class="flex flex-col gap-8">
         <input
-          type="checkbox"
-          formControlName="privacy"
-          id="privacy"
-          class="min-w-5 lg:mr-4 checkbox-black border-gray-300 rounded focus:ring-transparent focus:ring-2"
+          class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
+          type="text"
+          placeholder="your name"
+          formControlName="name"
         />
-        <span>
-          <label for="privacy" class="text-gray-700 w-full">
-            I consent to the use of my data. Read the
-          </label>
-          <a
-            href="/privacy-policy"
-            class="text-blue-500 underline hover:text-blue-700 pl-1"
-            >privacy policy</a
-          >
-        </span>
+        <input
+          class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
+          type="text"
+          placeholder="your email"
+          formControlName="email"
+        />
+        <textarea
+          class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
+          rows="4"
+          placeholder="your message"
+          formControlName="message"
+        ></textarea>
+        <div class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            formControlName="privacy"
+            id="privacy"
+            class="min-w-5 lg:mr-4 checkbox-black border-gray-300 rounded focus:ring-transparent focus:ring-2"
+          />
+          <span>
+            <label for="privacy" class="text-gray-700 w-full">
+              I consent to the use of my data. Read the
+            </label>
+            <a
+              href="/privacy-policy"
+              class="text-blue-500 underline hover:text-blue-700 pl-1"
+              >privacy policy</a
+            >
+          </span>
+        </div>
+        <app-button
+          class="w-fill"
+          label="get in touch"
+          (onClick)="handleFormSubmit()"
+        ></app-button>
+      </form>
+    </div>
+    <div class="text-col col-span-1 flex flex-col gap-8 order-0 lg:order-1">
+      <p>
+        If you're looking for a dedicated Junior Full Stack Web Developer to
+        join your team or collaborate on exciting projects, I'd love to connect!
+      </p>
+      <p>
+        With a passion for technology and design, I'm eager to contribute to
+        innovative solutions and take on new challenges. Whether you have a
+        full-time position or just want to discuss potential collaborations,
+        feel free to reach out.
+      </p>
+      <p>Let's work together to create something exceptional!</p>
+      <div class="flex justify-between">
+        <a
+          href="https://www.linkedin.com/in/lorenzo-rossini-8b7245242/"
+          target="_blank"
+          ><img
+            class="w-15 h-15 object-contain"
+            src="linkedin-icon.png"
+            alt="LinkedIn"
+        /></a>
+        <a href="" target="_blank"
+          ><img
+            class="w-15 h-15 object-contain"
+            src="github-icon.png"
+            alt="GitHub    "
+        /></a>
+        <a href="" target="_blank"
+          ><img
+            class="w-15 h-15 object-contain"
+            src="envelope.png"
+            alt="Gmail    "
+        /></a>
       </div>
-      <app-button
-        class="w-fill"
-        label="get in touch"
-        (onClick)="handleFormSubmit()"
-      ></app-button>
-    </form>
-  </div>
-  <div class="col-span-1 flex flex-col gap-8 order-0 lg:order-1">
-    <p>
-      If you're looking for a dedicated Junior Full Stack Web Developer to join
-      your team or collaborate on exciting projects, I'd love to connect!
-    </p>
-    <p>
-      With a passion for technology and design, I'm eager to contribute to
-      innovative solutions and take on new challenges. Whether you have a
-      full-time position or just want to discuss potential collaborations, feel
-      free to reach out.
-    </p>
-    <p>Let's work together to create something exceptional!</p>
-    <div class="flex justify-between">
-      <a
-        href="https://www.linkedin.com/in/lorenzo-rossini-8b7245242/"
-        target="_blank"
-        ><img
-          class="w-15 h-15 object-contain"
-          src="linkedin-icon.png"
-          alt="LinkedIn"
-      /></a>
-      <a href="" target="_blank"
-        ><img
-          class="w-15 h-15 object-contain"
-          src="github-icon.png"
-          alt="GitHub    "
-      /></a>
-      <a href="" target="_blank"
-        ><img
-          class="w-15 h-15 object-contain"
-          src="envelope.png"
-          alt="Gmail    "
-      /></a>
     </div>
   </div>
-</div>
+</section>

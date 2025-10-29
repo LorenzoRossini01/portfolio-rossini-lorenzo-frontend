@@ -1,27 +1,31 @@
-import { Component, computed, signal } from '@angular/core';
-import { link } from 'fs';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  Inject,
+  PLATFORM_ID,
+  computed,
+  signal,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ProjectCard } from '../../components/project-card/project-card';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
 @Component({
   selector: 'app-my-projects',
   imports: [ProjectCard],
   templateUrl: './my-projects.html',
-  styleUrl: './my-projects.css',
+  styleUrls: ['./my-projects.css'],
 })
 export class MyProjects {
+  @ViewChild('myProject', { static: true }) myProject!: ElementRef;
+
   categories = signal([
-    {
-      label: 'Web Development',
-      value: 'web-development',
-    },
-    {
-      label: 'Product Design',
-      value: 'product-design',
-    },
-    {
-      label: 'Other',
-      value: 'other',
-    },
+    { label: 'Web Development', value: 'web-development' },
+    { label: 'Product Design', value: 'product-design' },
+    { label: 'Other', value: 'other' },
   ]);
 
   allProjects = signal([
@@ -79,14 +83,99 @@ export class MyProjects {
     },
   ]);
 
-  filteredProjects = computed(() => {
-    return this.allProjects().filter(
-      (project) => project.category === this.activeCategory()
-    );
-  });
   activeCategory = signal('web-development');
+  filteredProjects = computed(() =>
+    this.allProjects().filter((p) => p.category === this.activeCategory())
+  );
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   handleCategorySelect(value: string) {
     this.activeCategory.set(value);
+
+    // aspetta che Angular aggiorni il DOM
+    requestAnimationFrame(() => {
+      // uccidi solo i trigger relativi alla sezione dei progetti
+      ScrollTrigger.getAll()
+        .filter((t) => t.trigger?.id === 'projects') // o qualunque selettore specifico
+        .forEach((t) => t.kill());
+
+      this.initProjectAnimations();
+    });
+  }
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+    this.initProjectAnimations();
+  }
+
+  private projectTriggers: ScrollTrigger[] = [];
+
+  private initProjectAnimations() {
+    this.projectTriggers.forEach((t) => t.kill());
+    this.projectTriggers = [];
+
+    const section = this.myProject.nativeElement;
+    const sectionTitle = section.querySelector('h3');
+    const categoryTitles = section.querySelectorAll('h4');
+    const cards = section.querySelectorAll(
+      '.project-card'
+    ) as NodeListOf<HTMLElement>;
+    gsap.from(window, {
+      duration: 0.5,
+      scrollTo: { x: 0, y: '#projects', offsetY: 100 },
+    });
+    // reset posizione delle card
+    gsap.set(cards, {
+      autoAlpha: 0,
+      y: 500,
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+    });
+
+    // animazione titolo + categorie
+    gsap.from([sectionTitle, ...categoryTitles], {
+      autoAlpha: 0,
+      y: 100,
+      duration: 1,
+      stagger: 0.5,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: section,
+        start: 'top 80%',
+        toggleActions: 'play none none reverse',
+      },
+    });
+
+    // timeline per le card
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: '30% center',
+        end: `+=${this.filteredProjects().length * 600}`,
+        scrub: true,
+        pin: true,
+        anticipatePin: 1,
+      },
+    });
+
+    // animazione "stack" card una sopra l'altra
+    cards.forEach((card, i) => {
+      tl.to(
+        card,
+        {
+          autoAlpha: 1,
+          y: 0,
+          ease: 'power3.out',
+          duration: 1,
+        },
+        i * 0.5
+      );
+    });
+
+    this.projectTriggers.push(tl.scrollTrigger!);
   }
 }
