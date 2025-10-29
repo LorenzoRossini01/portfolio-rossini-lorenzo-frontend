@@ -18,9 +18,37 @@ export interface ExperienceInterface {
   institution: string;
   degree: string;
   period: string;
-  image: string;
+  image: MediaInterface;
   link?: string;
   details: string;
+}
+export interface MediaInterface {
+  id: number;
+  url: string;
+  alternativeText?: string | null;
+  caption?: string | null;
+  width?: number;
+  height?: number;
+  formats?: MediaFormatsInterface;
+}
+
+export interface MediaFormatsInterface {
+  thumbnail?: MediaFormatInterface;
+  small?: MediaFormatInterface;
+  medium?: MediaFormatInterface;
+  large?: MediaFormatInterface;
+}
+
+export interface MediaFormatInterface {
+  ext: string;
+  url: string;
+  hash: string;
+  mime: string;
+  name: string;
+  path?: string | null;
+  size: number;
+  width: number;
+  height: number;
 }
 
 @Component({

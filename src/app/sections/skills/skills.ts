@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   Inject,
+  input,
   PLATFORM_ID,
   signal,
   ViewChild,
@@ -10,10 +11,12 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SkillItem } from '../../components/skill-item/skill-item';
 import { isPlatformBrowser } from '@angular/common';
+import { MediaInterface } from '../education/experience';
 
 export interface SkillInterface {
   name: string;
-  icon: string;
+  icon: MediaInterface;
+  level?: number;
 }
 
 @Component({
@@ -24,33 +27,7 @@ export interface SkillInterface {
 })
 export class Skills {
   @ViewChild('skillsSection', { static: true }) skillsSection!: ElementRef;
-  mySkills = signal<SkillInterface[]>([
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-    { name: 'HTML5', icon: 'html5.png' },
-  ]);
+  mySkills = input<SkillInterface[]>([]);
 
   handleDownloadCV() {
     window.open('assets/documents/CV_Lorenzo_Rossini.pdf', '_blank');

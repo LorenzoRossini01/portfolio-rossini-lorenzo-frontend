@@ -6,12 +6,15 @@ import {
   PLATFORM_ID,
   computed,
   signal,
+  inject,
+  OnInit,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ProjectCard } from '../../components/project-card/project-card';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+import { StrapiService } from '../../services/strapi.service';
 
 @Component({
   selector: 'app-my-projects',
@@ -19,14 +22,25 @@ import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
   templateUrl: './my-projects.html',
   styleUrls: ['./my-projects.css'],
 })
-export class MyProjects {
+export class MyProjects implements OnInit {
+  private strapiService = inject(StrapiService);
   @ViewChild('myProject', { static: true }) myProject!: ElementRef;
 
-  categories = signal([
-    { label: 'Web Development', value: 'web-development' },
-    { label: 'Product Design', value: 'product-design' },
-    { label: 'Other', value: 'other' },
-  ]);
+  ngOnInit() {
+    this.fetchProjects();
+  }
+
+  fetchProjects() {
+    this.strapiService.getProjects().subscribe({
+      next: (value) => {
+        this.allProjects.set(value.data);
+        console.log(value.data);
+      },
+      error: (err) => {},
+    });
+  }
+
+  categories = signal([{ label: 'Web Development', value: 'web-development' }]);
 
   allProjects = signal([
     {

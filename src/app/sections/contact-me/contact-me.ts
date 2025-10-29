@@ -2,8 +2,11 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  inject,
   Inject,
+  input,
   PLATFORM_ID,
+  signal,
   ViewChild,
   viewChild,
 } from '@angular/core';
@@ -17,29 +20,60 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { MarkdownPipe } from '../../pipes/markdown-pipe';
+import { ContactService } from '../../services/contact.service';
 
 @Component({
   selector: 'app-contact-me',
-  imports: [Button, ReactiveFormsModule],
+  imports: [Button, ReactiveFormsModule, MarkdownPipe],
   templateUrl: './contact-me.html',
   styleUrl: './contact-me.css',
 })
 export class ContactMe implements AfterViewInit {
+  contactText = input.required<string>();
+
+  private contactService = inject(ContactService);
+  isSending = signal(false);
+  success = signal(false);
+  errorMessage = signal<string | null>(null);
   @ViewChild('contactMe', { static: false }) contactMeSection!: ElementRef;
 
   // contactMeSection = viewChild<ElementRef>('contactMe');
   contactForm = new FormGroup({
-    name: new FormControl(''),
-    email: new FormControl(''),
-    message: new FormControl(''),
+    name: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.email, Validators.required]),
+    message: new FormControl('', Validators.required),
     privacy: new FormControl(false, Validators.required),
   });
 
   handleFormSubmit() {
-    if (this.contactForm.valid) {
-      console.log(this.contactForm.value);
-      // Here you can add your logic to send the form data to your server or email service
+    this.isSending.set(true);
+    if (this.contactForm.invalid) {
+      this.contactForm.markAllAsTouched();
+      return;
     }
+
+    const formValue = this.contactForm.value;
+    const payload = {
+      name: formValue.name ?? '',
+      email: formValue.email ?? '',
+      message: formValue.message ?? '',
+    };
+    this.contactService.sendMessage(payload).subscribe({
+      next: () => {
+        this.isSending.set(false);
+        this.success.set(true);
+        // console.log(payload);
+      },
+      error: (err) => {
+        console.error('Errore invio:', err);
+        this.errorMessage.set(
+          'Si è verificato un errore durante l’invio del messaggio.'
+        );
+        this.isSending.set(false);
+      },
+    });
+    this.contactForm.reset();
   }
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}

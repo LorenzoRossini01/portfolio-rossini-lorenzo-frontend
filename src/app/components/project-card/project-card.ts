@@ -15,5 +15,5 @@ export interface ProjectCardInterface {
   styleUrl: './project-card.css',
 })
 export class ProjectCard {
-  project = input.required<ProjectCardInterface>();
+  project = input.required<any>();
 }

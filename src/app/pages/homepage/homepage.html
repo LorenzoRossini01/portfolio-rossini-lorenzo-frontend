@@ -1,6 +1,6 @@
 <app-hero></app-hero>
-<app-about-me></app-about-me>
-<app-skills></app-skills>
+<app-about-me [aboutText]="aboutText()"></app-about-me>
+<app-skills [mySkills]="techSkills()"></app-skills>
 <div id="cv-button-1" class="flex justify-center w-full mt-60">
   <app-button
     label="Download Cv"
@@ -33,4 +33,4 @@
 </section>
 
 <app-my-projects></app-my-projects>
-<app-contact-me></app-contact-me>
+<app-contact-me [contactText]="contactText()"></app-contact-me>

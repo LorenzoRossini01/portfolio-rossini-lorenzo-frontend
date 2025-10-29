@@ -1,11 +1,20 @@
 <div class="w-full">
   <img
-    [src]="project().cover_image"
+    [src]="`http://localhost:1337${project().cover_image.formats?.medium?.url}`"
     [alt]="project().title"
-    class="object-fit-cover w-full h-64 mb-4 rounded-lg"
+    class="object-cover object-top w-full h-64 mb-4 rounded-lg"
   />
   <div>
     <h6 class="capitalize font-semibold">{{ project().title }}</h6>
-    <p>{{ project().description }}</p>
+    <p>{{ project().description_excerpt }}</p>
+    <div class="flex flex-col text-blue underline">
+      @if (project().repository_url) {
+
+      <a [href]="project().repository_url" target="_blank">Vedi la repo</a>
+      } @if (project().project_url) {
+
+      <a [href]="project().project_url" target="_blank">Vedi il sito online</a>
+      }
+    </div>
   </div>
 </div>

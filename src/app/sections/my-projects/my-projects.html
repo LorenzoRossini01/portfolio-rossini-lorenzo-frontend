@@ -8,11 +8,7 @@
     >
       @for (category of categories(); track $index) {
 
-      <h4
-        [class.text-black]="activeCategory() === category.value"
-        class="cursor-pointer hover:text-gray-700 w-fit"
-        (click)="handleCategorySelect(category.value)"
-      >
+      <h4 class="cursor-pointer hover:text-gray-700 w-fit">
         {{ category.label }}
       </h4>
       }
@@ -22,7 +18,7 @@
       <div
         class="relative flex flex-col justify-start gap-16 overflow-y-auto pb-20 scroll-auto h-[800px] hide-scrollbar scroll-container"
       >
-        @for (project of filteredProjects(); track $index) {
+        @for (project of allProjects(); track $index) {
 
         <app-project-card
           class="project-card bg-white rounded-xl"

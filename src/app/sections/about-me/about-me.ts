@@ -4,20 +4,24 @@ import {
   Component,
   ElementRef,
   Inject,
+  input,
   PLATFORM_ID,
   viewChild,
   ViewChild,
 } from '@angular/core';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { MarkdownPipe } from '../../pipes/markdown-pipe';
 
 @Component({
   selector: 'app-about-me',
   standalone: true,
+  imports: [MarkdownPipe],
   templateUrl: './about-me.html',
   styleUrls: ['./about-me.css'],
 })
 export class AboutMe implements AfterViewInit {
+  aboutText = input.required<string>();
   aboutSection = viewChild<ElementRef>('aboutSection');
   socialIcons = viewChild<ElementRef>('socialIcons');
 
