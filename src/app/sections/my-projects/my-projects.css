@@ -1,24 +1,16 @@
-.hide-scrollbar {
-  -ms-overflow-style: none; /* IE e Edge */
-  scrollbar-width: none; /* Firefox */
-}
-.hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+.projects-stack {
+  position: relative;
+  height: 100vh; /* o quanto vuoi che duri la sezione visivamente */
+  overflow: visible;
 }
 
-.scroll-container {
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
-}
-
-.scroll-container .project-card {
-  scroll-snap-align: start;
-}
-
-.overlay-top {
-  background: linear-gradient(to bottom, rgb(255, 255, 255), rgba(0, 0, 0, 0));
-}
-.overlay-bottom {
-  background: linear-gradient(to top, rgb(255, 255, 255), rgba(0, 0, 0, 0));
+.project-card {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 800px;
+  opacity: 0;
+  pointer-events: none; /* così non interferiscono col click */
 }
