@@ -1,16 +1,14 @@
 import {
   Component,
   ElementRef,
-  Inject,
   input,
-  PLATFORM_ID,
-  signal,
-  ViewChild,
+  viewChild,
+  AfterViewInit,
+  OnDestroy,
 } from '@angular/core';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SkillItem } from '../../components/skill-item/skill-item';
-import { isPlatformBrowser } from '@angular/common';
 import { MediaInterface } from '../education/experience';
 
 export interface SkillInterface {
@@ -25,118 +23,84 @@ export interface SkillInterface {
   templateUrl: './skills.html',
   styleUrl: './skills.css',
 })
-export class Skills {
-  @ViewChild('skillsSection', { static: true }) skillsSection!: ElementRef;
+export class Skills implements AfterViewInit, OnDestroy {
+  skillsSection = viewChild<ElementRef>('skillsSection');
   mySkills = input<SkillInterface[]>([]);
+
+  private scrollTriggerInstance?: ScrollTrigger;
 
   handleDownloadCV() {
     window.open('assets/documents/CV_Lorenzo_Rossini.pdf', '_blank');
   }
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
     gsap.registerPlugin(ScrollTrigger);
-    const section = this.skillsSection.nativeElement as HTMLElement;
+
+    const section = this.skillsSection()?.nativeElement as HTMLElement;
+    if (!section) return;
+
     const rows = Array.from(section.querySelectorAll('.grid')) as HTMLElement[];
-    const sectionTitle = section.querySelector('h3');
+    const sectionTitle = section.querySelector('h3') as HTMLElement;
+    const skillItems = Array.from(
+      section.querySelectorAll('.skill-item')
+    ) as HTMLElement[];
 
-    const tl = gsap.timeline();
+    if (!sectionTitle) {
+      console.warn('Skills: Section title non trovato');
+      return;
+    }
 
-    tl.from(sectionTitle, {
-      autoAlpha: 0,
-      x: 500,
-      duration: 1,
-      ease: 'power3.out',
+    // Imposta lo stato iniziale
+    gsap.set(sectionTitle, { opacity: 0 });
+    gsap.set(rows, { scale: 0.7, opacity: 0 });
+
+    const tl = gsap.timeline({
+      defaults: {
+        ease: 'power3.out',
+      },
     });
 
-    // Animazione riga per riga
-    rows.forEach((row) => {
-      const icons = Array.from(row.children) as HTMLElement[];
+    // Animazione titolo
+    tl.fromTo(
+      sectionTitle,
+      { opacity: 0, x: 500 },
+      { opacity: 1, x: 0, duration: 1 }
+    );
 
-      gsap.set(icons, { y: 0 }); // stato iniziale
-      tl.from(icons, {
-        autoAlpha: 0,
-        y: 50,
-      });
-    });
+    // Animazione griglia con stagger
+    tl.fromTo(
+      rows,
+      { scale: 0.7, opacity: 0 },
+      {
+        scale: 1,
+        opacity: 1,
+        duration: 1,
+        stagger: 0.2,
+      },
+      '-=0.5'
+    );
 
-    tl.from(rows, {
-      scale: 0.7,
-    });
-    ScrollTrigger.create({
+    this.scrollTriggerInstance = ScrollTrigger.create({
       animation: tl,
       trigger: section,
-      start: 'center 70%',
-      end: '+=700',
-      toggleActions: 'restart pause reverse pause',
-      scrub: true,
-      pin: true,
+      start: 'top 70%',
+      end: 'center 40%',
+      scrub: 1,
+      // markers: true,
     });
+  }
 
-    const skillItem = document.querySelectorAll('.skill-item');
+  ngOnDestroy(): void {
+    // Cleanup ScrollTrigger
+    this.scrollTriggerInstance?.kill();
 
-    skillItem?.forEach((el) =>
-      el.addEventListener('mouseenter', (event) => {
-        const rect = el.getBoundingClientRect();
-        const x = (event as MouseEvent).clientX - rect.left;
-        const y = (event as MouseEvent).clientY - rect.top;
-        const fromTop = y;
-        const fromBottom = rect.height - y;
-        const fromLeft = x;
-        const fromRight = rect.width - x;
-
-        const min = Math.min(fromTop, fromBottom, fromLeft, fromRight);
-        let direction = '';
-
-        switch (min) {
-          case fromTop:
-            direction = 'top';
-            gsap.from(el, {
-              scale: 1.2,
-
-              ease: 'bounce.out',
-            });
-            break;
-          case fromBottom:
-            direction = 'bottom';
-            gsap.from(el, {
-              scale: 1.2,
-
-              ease: 'bounce.out',
-            });
-            break;
-          case fromLeft:
-            direction = 'left';
-            gsap.from(el, {
-              rotationY: 180,
-              // scale: 1.2,
-
-              ease: 'bounce.out',
-            });
-            break;
-          case fromRight:
-            direction = 'right';
-            gsap.from(el, {
-              rotationY: -180,
-              // scale: 1.2,
-
-              ease: 'bounce.out',
-            });
-            break;
+    const section = this.skillsSection()?.nativeElement;
+    if (section) {
+      ScrollTrigger.getAll().forEach((st) => {
+        if (st.vars.trigger === section) {
+          st.kill();
         }
-      })
-    );
-    skillItem?.forEach((el) =>
-      el.addEventListener('mouseleave', () => {
-        gsap.to(el, {
-          rotationY: 0,
-          rotationX: 0,
-          scale: 1,
-          ease: 'power3.out',
-        });
-      })
-    );
+      });
+    }
   }
 }

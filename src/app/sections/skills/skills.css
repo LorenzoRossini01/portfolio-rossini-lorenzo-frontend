@@ -1,0 +1,18 @@
+.skill-item {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  /* Nascondi di default per evitare flash */
+  opacity: 0;
+}
+
+.skill-item:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.grid {
+  /* Nascondi di default per evitare flash */
+  opacity: 0;
+}

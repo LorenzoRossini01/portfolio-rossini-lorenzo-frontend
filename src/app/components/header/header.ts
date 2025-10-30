@@ -1,6 +1,5 @@
-import { Component, Inject, PLATFORM_ID, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Button } from '../../shared/button/button';
-import { isPlatformBrowser } from '@angular/common';
 import { gsap } from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 gsap.registerPlugin(ScrollToPlugin);
@@ -90,13 +89,7 @@ export class Header {
     this.drawerOpen.set(false);
   }
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
-
-  ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.theme.set('light');
-    }
-  }
+  ngOnInit() {}
 
   toggleTheme() {
     const newTheme = this.theme() === 'light' ? 'dark' : 'light';

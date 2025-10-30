@@ -37,3 +37,18 @@ h1.visible:hover::after,
 h2.visible:hover::after {
   width: 100%;
 }
+
+.char {
+  display: inline-block;
+  /* Previeni il collasso degli spazi */
+  white-space: pre;
+}
+
+.down-arrow {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.down-arrow:hover {
+  transform: scale(1.1);
+}

@@ -1,13 +1,9 @@
-import { isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
   ElementRef,
-  Inject,
   input,
-  PLATFORM_ID,
   viewChild,
-  ViewChild,
 } from '@angular/core';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -25,54 +21,65 @@ export class AboutMe implements AfterViewInit {
   aboutText = input.required<string>();
   aboutSection = viewChild<ElementRef>('aboutSection');
   socialIcons = viewChild<ElementRef>('socialIcons');
-
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
-
+  private scrollTriggerInstance?: ScrollTrigger;
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
     gsap.registerPlugin(ScrollTrigger);
 
     const section = this.aboutSection()?.nativeElement as HTMLElement;
+    if (!section) return;
+
     const photoCol = section.querySelector('.photo-col') as HTMLElement;
     const textCol = section.querySelector('.text-col') as HTMLElement;
     const sectionTitle = section.querySelector('.section-title') as HTMLElement;
 
-    const tl = gsap.timeline();
+    // Verifica che tutti gli elementi esistano
+    if (!photoCol || !textCol || !sectionTitle) {
+      console.warn('AboutMe: Alcuni elementi non sono stati trovati nel DOM');
+      return;
+    }
 
-    // Animazione testo legata allo scroll
-    tl.from(sectionTitle, {
-      autoAlpha: 0,
-      x: 500,
-      duration: 1,
-      ease: 'power3.out',
+    // Imposta lo stato iniziale
+    gsap.set([sectionTitle, photoCol, textCol], {
+      opacity: 0,
     });
 
-    // Animazione foto legata allo scroll
-    tl.from(photoCol, {
-      autoAlpha: 0,
-      x: -1000,
-      y: 500,
-      duration: 1,
-      ease: 'power3.out',
+    const tl = gsap.timeline({
+      defaults: {
+        ease: 'power3.out',
+      },
     });
 
-    tl.from(textCol, {
-      autoAlpha: 0,
-      x: 500,
-      y: 500,
-      duration: 1,
-      ease: 'power3.out',
-    });
+    // Animazioni in sequenza con overlap
+    tl.fromTo(
+      sectionTitle,
+      { opacity: 0, x: 500 },
+      { opacity: 1, x: 0, duration: 1 }
+    )
+      .fromTo(
+        photoCol,
+        { opacity: 0, x: -1000, y: 500 },
+        { opacity: 1, x: 0, y: 0, duration: 1 },
+        '-=0.5'
+      )
+      .fromTo(
+        textCol,
+        { opacity: 0, x: 500, y: 500 },
+        { opacity: 1, x: 0, y: 0, duration: 1 },
+        '-=0.7'
+      );
 
-    ScrollTrigger.create({
+    this.scrollTriggerInstance = ScrollTrigger.create({
       animation: tl,
-      trigger: this.aboutSection()?.nativeElement,
-      toggleActions: 'restart pause reverse pause',
-      start: '30% center',
-      end: '+=500',
-      scrub: true,
-      pin: true,
+      trigger: section,
+      start: 'top 70%',
+      end: 'center center',
+      scrub: 1,
+      toggleActions: 'play none none reverse',
     });
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup
+    this.scrollTriggerInstance?.kill();
   }
 }

@@ -1,15 +1,13 @@
-import { isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
   ElementRef,
-  Inject,
-  PLATFORM_ID,
   viewChild,
-  ViewChild,
+  OnDestroy,
 } from '@angular/core';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
 @Component({
   selector: 'app-hero',
@@ -17,25 +15,29 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
   templateUrl: './hero.html',
   styleUrls: ['./hero.css'],
 })
-export class Hero implements AfterViewInit {
+export class Hero implements AfterViewInit, OnDestroy {
   heroSection = viewChild<ElementRef<HTMLDivElement>>('heroSection');
+  private scrollTriggerInstance?: ScrollTrigger;
+  private arrowLoop?: gsap.core.Tween;
+  private mainTimeline?: gsap.core.Timeline;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
-
+  constructor() {
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+  }
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    gsap.registerPlugin(ScrollTrigger);
-
     const section = this.heroSection()?.nativeElement;
     if (!section) return;
 
-    const headings = section.querySelectorAll('h1,h2');
+    // Split del testo in caratteri
+    const headings = section.querySelectorAll('h1, h2');
     headings?.forEach((heading) => {
       const text = heading.textContent || '';
       heading.innerHTML = text
         .split('')
-        .map((char) => `<span class="char">${char}</span>`)
+        .map((char) => {
+          const displayChar = char === ' ' ? '&nbsp;' : char;
+          return `<span class="char">${displayChar}</span>`;
+        })
         .join('');
     });
 
@@ -47,61 +49,128 @@ export class Hero implements AfterViewInit {
       return;
     }
 
+    downArrow.addEventListener('click', () => {
+      gsap.to(window, {
+        scrollTo: { y: section.offsetHeight, autoKill: true },
+        duration: 1,
+        ease: 'power2.inOut',
+      });
+    });
+
     const letters = Array.from(section.querySelectorAll('.char'));
 
-    // setup base
-    gsap.set(letters, { autoAlpha: 1 });
-    gsap.set(downArrow, { autoAlpha: 0, y: 0 });
+    // Setup base
+    gsap.set(letters, { opacity: 0, y: 20 });
+    gsap.set(downArrow, { opacity: 0, y: 0 });
 
-    // 1️⃣ animazione dei titoli
-    const tl = gsap.timeline({
-      onComplete: () => {
-        // mostra la freccia solo quando i titoli hanno finito
-        gsap.to(downArrow, { autoAlpha: 1, duration: 0.4 });
-        arrowLoop.play();
+    //Animazione principale (titoli + freccia)
+    this.mainTimeline = gsap.timeline({
+      defaults: {
+        ease: 'power3.out',
       },
+      paused: true,
     });
 
-    tl.from(letters, {
-      autoAlpha: 0,
-      ease: 'power3.out',
-      stagger: 0.2,
-      duration: 1.5,
-    });
+    this.mainTimeline
+      .to(letters, {
+        opacity: 1,
+        y: 0,
+        stagger: {
+          amount: 0.8,
+          from: 'start',
+        },
+        duration: 0.6,
+      })
+      .to(
+        downArrow,
+        {
+          opacity: 1,
+          duration: 0.5,
+          ease: 'power2.out',
+          onComplete: () => {
+            this.arrowLoop?.play();
+          },
+        },
+        '-=0.2'
+      );
 
-    // 2️⃣ loop continuo della freccia
-    const arrowLoop = gsap.to(downArrow, {
-      y: 50,
+    // Loop continuo della freccia
+    this.arrowLoop = gsap.to(downArrow, {
+      y: 20,
       repeat: -1,
       yoyo: true,
-      paused: true, // parte solo dopo l'apparizione
-      ease: 'power1.in',
+      paused: true,
+      ease: 'power1.inOut',
       duration: 0.8,
     });
 
-    // 3️⃣ gestione scroll
     ScrollTrigger.create({
       trigger: section,
-      start: 'center center',
-      end: '+=500',
-      scrub: true,
-      // pin: true,
+      start: 'top 80%',
+      end: '80% 20%',
+      // markers: true,
+      toggleActions: 'play reverse play reverse',
+      animation: this.mainTimeline,
+      onToggle: (self) => {
+        if (self.isActive) {
+          this.arrowLoop?.play();
+        } else {
+          this.arrowLoop?.pause();
+        }
+      },
+    });
+
+    // Gestione scomparsa freccia durante scroll
+    this.scrollTriggerInstance = ScrollTrigger.create({
+      trigger: section,
+      start: 'bottom center',
+      end: 'bottom top',
+      // markers: true,
       onEnter: () => {
-        // ferma il loop
-        arrowLoop.pause(0);
-        // animazione verso il basso
+        // Scroll verso il basso: nascondi la freccia
+        this.arrowLoop?.pause();
         gsap.to(downArrow, {
-          y: 150,
-          autoAlpha: 0,
-          duration: 0.5,
-          ease: 'power3.in',
+          y: 100,
+          opacity: 0,
+          duration: 0.4,
+          ease: 'power2.in',
         });
       },
       onLeaveBack: () => {
-        // se torni indietro, riparte il loop
-        gsap.to(downArrow, { y: 0, autoAlpha: 1, duration: 0.1 });
-        arrowLoop.play();
+        // Torna indietro: ripristina la freccia
+        gsap.to(downArrow, {
+          y: 0,
+          opacity: 1,
+          duration: 0.3,
+          ease: 'power2.out',
+          onComplete: () => {
+            this.arrowLoop?.play();
+          },
+        });
       },
     });
+
+    // Avvia l'animazione se la sezione è già visibile al caricamento
+    const rect = section.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.8) {
+      this.mainTimeline.play();
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup delle animazioni
+    this.arrowLoop?.kill();
+    this.mainTimeline?.kill();
+    this.scrollTriggerInstance?.kill();
+
+    // Pulisci tutti gli ScrollTrigger della sezione
+    const section = this.heroSection()?.nativeElement;
+    if (section) {
+      ScrollTrigger.getAll().forEach((st) => {
+        if (st.vars.trigger === section) {
+          st.kill();
+        }
+      });
+    }
   }
 }

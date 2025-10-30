@@ -1,15 +1,7 @@
-import {
-  Component,
-  ElementRef,
-  Inject,
-  input,
-  PLATFORM_ID,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, input, ViewChild } from '@angular/core';
 import { ExperienceInterface } from '../../sections/education/experience';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-experience-card',
@@ -21,11 +13,7 @@ export class ExperienceCard {
   experience = input.required<ExperienceInterface>();
   @ViewChild('card', { static: true }) card!: ElementRef;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
-
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
     gsap.registerPlugin(ScrollTrigger);
     const element = this.card.nativeElement as HTMLElement;
     const textCol = element.querySelector('div:nth-child(1)') as HTMLElement;

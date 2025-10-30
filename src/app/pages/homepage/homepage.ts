@@ -2,10 +2,8 @@ import {
   AfterViewInit,
   Component,
   inject,
-  Inject,
   OnDestroy,
   OnInit,
-  PLATFORM_ID,
   signal,
 } from '@angular/core';
 import { Hero } from '../../sections/hero/hero';
@@ -20,8 +18,7 @@ import {
 import { Button } from '../../shared/button/button';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { log } from 'console';
-import { isPlatformBrowser } from '@angular/common';
+
 import { StrapiService } from '../../services/strapi.service';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -42,6 +39,7 @@ export class Homepage implements OnInit, AfterViewInit, OnDestroy {
     this.fetchCertifications();
     this.fetchPreviousJobs();
     this.fetchContactText();
+    this.fetchProjects();
   }
 
   fetchAboutText() {
@@ -113,6 +111,18 @@ export class Homepage implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  fetchProjects() {
+    this.strapiService
+      .getProjects()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.allProjects.set(value.data);
+        },
+        error: (err) => {},
+      });
+  }
+
   aboutText = signal<string>('');
 
   techSkills = signal<SkillInterface[]>([]);
@@ -123,16 +133,13 @@ export class Homepage implements OnInit, AfterViewInit, OnDestroy {
 
   myPreviousJobs = signal<ExperienceInterface[]>([]);
   contactText = signal<string>('');
+  allProjects = signal<any[]>([]);
 
   handleDownloadCV() {
     window.open('assets/documents/CV_Lorenzo_Rossini.pdf', '_blank');
   }
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
-
-  ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
+  initAnimation() {
     gsap.registerPlugin(ScrollTrigger);
     const buttonEl1 = document.querySelector(
       '#cv-button-1 button'
@@ -144,17 +151,28 @@ export class Homepage implements OnInit, AfterViewInit, OnDestroy {
 
     gsap.fromTo(
       buttonEl1,
-      { x: -200, autoAlpha: 0 },
+      {
+        x: -200,
+        autoAlpha: 0,
+        duration: 1,
+        scrollTrigger: {
+          trigger: buttonEl1,
+          start: 'top bottom',
+          end: 'bottom center',
+          scrub: true,
+          toggleActions: 'play none none reverse',
+        },
+      },
       {
         keyframes: [
-          { x: 0, autoAlpha: 1, ease: 'power3.out', duration: 0.4 },
-          { x: 200, autoAlpha: 0, ease: 'power3.in', duration: 0.4 },
+          { x: 0, autoAlpha: 1, ease: 'power3.out' },
+          { x: 200, autoAlpha: 0, ease: 'power3.in' },
         ],
         duration: 1,
         scrollTrigger: {
           trigger: buttonEl1,
-          start: 'top 90%',
-          end: 'bottom 10%',
+          start: 'top center',
+          end: 'bottom top',
           scrub: true,
           toggleActions: 'play none none reverse',
         },
@@ -162,22 +180,39 @@ export class Homepage implements OnInit, AfterViewInit, OnDestroy {
     );
     gsap.fromTo(
       buttonEl2,
-      { x: -200, autoAlpha: 0 },
+      {
+        x: 200,
+        autoAlpha: 0,
+        duration: 1,
+        scrollTrigger: {
+          trigger: buttonEl2,
+          start: 'top bottom',
+          end: 'bottom center',
+          scrub: true,
+          toggleActions: 'play none none reverse',
+        },
+      },
       {
         keyframes: [
-          { x: 0, autoAlpha: 1, ease: 'power3.out', duration: 0.4 },
-          { x: 200, autoAlpha: 0, ease: 'power3.in', duration: 0.4 },
+          { x: 0, autoAlpha: 1, ease: 'power3.out' },
+          { x: -200, autoAlpha: 0, ease: 'power3.in' },
         ],
         duration: 1,
         scrollTrigger: {
           trigger: buttonEl2,
-          start: 'top 90%',
-          end: 'bottom 10%',
+          start: 'top center',
+          end: 'bottom top',
           scrub: true,
           toggleActions: 'play none none reverse',
         },
       }
     );
+  }
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.initAnimation();
+      ScrollTrigger.refresh();
+    });
   }
   ngOnDestroy(): void {
     this.destroy$.next();

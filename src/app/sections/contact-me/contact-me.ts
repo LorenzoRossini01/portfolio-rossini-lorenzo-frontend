@@ -3,12 +3,11 @@ import {
   Component,
   ElementRef,
   inject,
-  Inject,
   input,
-  PLATFORM_ID,
+  OnDestroy,
   signal,
-  ViewChild,
   viewChild,
+  ViewChild,
 } from '@angular/core';
 import { Button } from '../../shared/button/button';
 import {
@@ -17,7 +16,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { isPlatformBrowser } from '@angular/common';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MarkdownPipe } from '../../pipes/markdown-pipe';
@@ -30,7 +28,7 @@ import { SocialLinks } from '../../components/social-links/social-links';
   templateUrl: './contact-me.html',
   styleUrl: './contact-me.css',
 })
-export class ContactMe implements AfterViewInit {
+export class ContactMe implements AfterViewInit, OnDestroy {
   contactText = input.required<string>();
 
   private contactService = inject(ContactService);
@@ -77,50 +75,76 @@ export class ContactMe implements AfterViewInit {
     this.contactForm.reset();
   }
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
-
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
     gsap.registerPlugin(ScrollTrigger);
 
     const section = this.contactMeSection?.nativeElement;
     if (!section) return;
+
+    const pinWrapper = section.querySelector('.pin-wrapper');
     const sectiontitle = section.querySelector('h3');
     const contactFormEl = section.querySelector('.contact-form');
     const textCol = section.querySelector('.text-col');
 
-    const tl = gsap.timeline();
+    // Aspetta che il DOM sia completamente renderizzato
+    setTimeout(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: '+=500',
+          scrub: true,
+          pin: pinWrapper,
+          pinSpacing: true,
+          anticipatePin: 1,
+          refreshPriority: -1, // Calcola dopo altri ScrollTrigger
+          markers: true,
+          onRefresh: (self) => {
+            console.log('Start:', self.start, 'End:', self.end);
+          },
+        },
+      });
 
-    tl.from(sectiontitle, {
-      autoAlpha: 0,
-      x: 1000,
-      duration: 1,
-      ease: 'power3.out',
-    });
-    tl.from(textCol, {
-      autoAlpha: 0,
-      x: 1000,
-      y: 500,
-      duration: 1,
-      ease: 'power3.out',
-    });
-    tl.from(contactFormEl, {
-      autoAlpha: 0,
-      x: -1000,
-      y: 500,
-      duration: 1,
-      ease: 'power3.out',
-    });
+      tl.from(sectiontitle, {
+        autoAlpha: 0,
+        x: 1000,
+        duration: 1,
+        ease: 'power3.out',
+      })
+        .from(
+          textCol,
+          {
+            autoAlpha: 0,
+            x: 1000,
+            y: 500,
+            duration: 1,
+            ease: 'power3.out',
+          },
+          '-=0.5'
+        )
+        .from(
+          contactFormEl,
+          {
+            autoAlpha: 0,
+            x: -1000,
+            y: 500,
+            duration: 1,
+            ease: 'power3.out',
+          },
+          '-=0.5'
+        );
 
-    ScrollTrigger.create({
-      animation: tl,
-      trigger: section,
-      start: '30% center',
-      end: '+=500',
-      scrub: true,
-      toggleActions: 'play none none reverse',
-      pin: true,
+      // Forza un refresh dopo la creazione
+      ScrollTrigger.refresh();
+    }, 100);
+  }
+
+  ngOnDestroy(): void {
+    // Pulisci tutti gli ScrollTrigger di questo componente
+    ScrollTrigger.getAll().forEach((st) => {
+      if (st.vars.trigger === this.contactMeSection?.nativeElement) {
+        st.kill();
+      }
     });
   }
 }

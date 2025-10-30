@@ -1,62 +1,64 @@
 <section #contactMe class="h-fit px-8 lg:px-20 py-60" id="contact">
-  <h3 class="text-4xl uppercase hightlight-full w-fit relative mx-auto mb-20">
-    Contact me
-  </h3>
+  <div class="pin-wrapper">
+    <h3 class="text-4xl uppercase hightlight-full w-fit relative mx-auto mb-20">
+      Contact me
+    </h3>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <div class="contact-form col-span-1 order-1 lg:order-0">
-      <form [formGroup]="contactForm" action="" class="flex flex-col gap-8">
-        <input
-          class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
-          type="text"
-          id="name"
-          autocomplete="name"
-          placeholder="your name"
-          formControlName="name"
-        />
-        <input
-          class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
-          type="email"
-          id="email"
-          autocomplete="email"
-          placeholder="your email"
-          formControlName="email"
-        />
-        <textarea
-          class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
-          rows="4"
-          id="message"
-          placeholder="your message"
-          formControlName="message"
-        ></textarea>
-        <div class="flex items-center gap-2">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="contact-form col-span-1 order-1 lg:order-0">
+        <form [formGroup]="contactForm" action="" class="flex flex-col gap-8">
           <input
-            type="checkbox"
-            formControlName="privacy"
-            id="privacy"
-            class="min-w-5 lg:mr-4 checkbox-black border-gray-300 rounded focus:ring-transparent focus:ring-2"
+            class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
+            type="text"
+            id="name"
+            autocomplete="name"
+            placeholder="your name"
+            formControlName="name"
           />
-          <span>
-            <label for="privacy" class="text-gray-700 w-full">
-              I consent to the use of my data. Read the
-            </label>
-            <a
-              href="/privacy-policy"
-              class="text-blue-500 underline hover:text-blue-700 pl-1"
-              >privacy policy</a
-            >
-          </span>
-        </div>
-        <app-button
-          class="w-fill"
-          label="get in touch"
-          (onClick)="handleFormSubmit()"
-        ></app-button>
-      </form>
-    </div>
-    <div class="text-col col-span-1 flex flex-col gap-8 order-0 lg:order-1">
-      <div [innerHTML]="contactText() | markdown"></div>
-      <app-social-links></app-social-links>
+          <input
+            class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
+            type="email"
+            id="email"
+            autocomplete="email"
+            placeholder="your email"
+            formControlName="email"
+          />
+          <textarea
+            class="px-4 w-full py-4 bg-gray-200 placeholder-gray-600 font-semibold"
+            rows="4"
+            id="message"
+            placeholder="your message"
+            formControlName="message"
+          ></textarea>
+          <div class="flex items-center gap-2">
+            <input
+              type="checkbox"
+              formControlName="privacy"
+              id="privacy"
+              class="min-w-5 lg:mr-4 checkbox-black border-gray-300 rounded focus:ring-transparent focus:ring-2"
+            />
+            <span>
+              <label for="privacy" class="text-gray-700 w-full">
+                I consent to the use of my data. Read the
+              </label>
+              <a
+                href="/privacy-policy"
+                class="text-blue-500 underline hover:text-blue-700 pl-1"
+                >privacy policy</a
+              >
+            </span>
+          </div>
+          <app-button
+            class="w-fill"
+            label="get in touch"
+            (onClick)="handleFormSubmit()"
+          ></app-button>
+        </form>
+      </div>
+      <div class="text-col col-span-1 flex flex-col gap-8 order-0 lg:order-1">
+        <div [innerHTML]="contactText() | markdown"></div>
+        <app-social-links></app-social-links>
+      </div>
     </div>
   </div>
 </section>

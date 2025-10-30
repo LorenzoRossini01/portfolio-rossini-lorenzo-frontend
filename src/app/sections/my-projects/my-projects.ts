@@ -2,16 +2,14 @@ import {
   Component,
   ElementRef,
   ViewChild,
-  Inject,
-  PLATFORM_ID,
-  computed,
   signal,
   inject,
   OnInit,
   AfterViewInit,
   OnDestroy,
+  input,
+  effect,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { ProjectCard } from '../../components/project-card/project-card';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -25,59 +23,27 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './my-projects.html',
   styleUrls: ['./my-projects.css'],
 })
-export class MyProjects implements OnInit, AfterViewInit, OnDestroy {
-  private strapiService = inject(StrapiService);
+export class MyProjects implements AfterViewInit, OnDestroy {
   @ViewChild('myProject', { static: true }) myProject!: ElementRef;
-  private destroy$ = new Subject<void>();
 
-  ngOnInit() {
-    this.fetchProjects();
-  }
-
-  fetchProjects() {
-    this.strapiService
-      .getProjects()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
-          this.allProjects.set(value.data);
-        },
-        error: (err) => {},
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
+  allProjects = input<any[]>([]);
   categories = signal('Web Development');
 
-  allProjects = signal([]);
+  constructor() {
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-  activeCategory = signal('web-development');
+    effect(() => {
+      const projects = this.allProjects();
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
-
-  handleCategorySelect(value: string) {
-    this.activeCategory.set(value);
-
-    // aspetta che Angular aggiorni il DOM
-    requestAnimationFrame(() => {
-      // uccidi solo i trigger relativi alla sezione dei progetti
-      ScrollTrigger.getAll()
-        .filter((t) => t.trigger?.id === 'projects') // o qualunque selettore specifico
-        .forEach((t) => t.kill());
-
-      this.initProjectAnimations();
+      if (projects && projects.length > 0) {
+        setTimeout(() => {
+          this.initProjectAnimations();
+        }, 100);
+      }
     });
   }
 
-  ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-    this.initProjectAnimations();
-  }
+  ngAfterViewInit(): void {}
 
   private initProjectAnimations() {
     const section = this.myProject.nativeElement as HTMLElement;
@@ -89,6 +55,8 @@ export class MyProjects implements OnInit, AfterViewInit, OnDestroy {
 
     if (!section || cards.length === 0) return;
 
+    // Crea un wrapper da pinnare
+
     // inizializza stack
     cards.forEach((card, i) => {
       gsap.set(card, {
@@ -98,21 +66,24 @@ export class MyProjects implements OnInit, AfterViewInit, OnDestroy {
         position: 'absolute',
         top: 0,
         width: '100%',
-        zIndex: cards.length - i, // prima sotto, ultima sopra
+        zIndex: cards.length - i,
         pointerEvents: 'none',
       });
     });
 
     const sectionScrollLength = cards.length * 300;
 
-    // timeline unica
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
-        start: 'center 80%',
+        start: 'top top',
         end: `+=${sectionScrollLength}`,
         scrub: true,
-        pin: true,
+        pin: section,
+        pinSpacing: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        // markers: true,
       },
     });
 
@@ -148,8 +119,20 @@ export class MyProjects implements OnInit, AfterViewInit, OnDestroy {
             duration: 0.5,
             ease: 'power1.out',
           },
-          `-=${0.1}` // leggero overlap tra fade-in/fade-out
+          `-=${0.1}` // leggero overlap
         );
+      }
+    });
+
+    // Aggiorna ScrollTrigger
+    ScrollTrigger.refresh();
+  }
+
+  ngOnDestroy(): void {
+    // Pulisci tutti gli ScrollTrigger di questo componente
+    ScrollTrigger.getAll().forEach((st) => {
+      if (st.vars.trigger === this.myProject?.nativeElement) {
+        st.kill();
       }
     });
   }
