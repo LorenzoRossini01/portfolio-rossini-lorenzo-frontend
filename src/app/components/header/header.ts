@@ -32,17 +32,61 @@ export class Header {
     this.activeLink.set(link.label);
 
     if (el) {
-      gsap.to(window, {
-        duration: 2,
-        ease: 'power3.out',
-        scrollTo: { y: link.path, offsetY: 0, autoKill: true },
-      });
+      switch (link.path) {
+        case '#about':
+          gsap.to(window, {
+            duration: 2,
+            ease: 'power3.out',
+            scrollTo: { y: '#about', offsetY: 100, autoKill: true },
+          });
+          break;
+        case '#works':
+          gsap.to(window, {
+            duration: 2,
+            ease: 'power3.out',
+            scrollTo: { y: '#works', offsetY: 100, autoKill: true },
+          });
+          break;
+        case '#education':
+          gsap.to(window, {
+            duration: 2,
+            ease: 'power3.out',
+            scrollTo: { y: '#education', offsetY: -120, autoKill: true },
+          });
+          break;
+        case '#projects':
+          gsap.to(window, {
+            duration: 2,
+            ease: 'power3.out',
+            scrollTo: { y: '#projects', offsetY: 0, autoKill: true },
+          });
+          break;
+        case '#contact':
+          gsap.to(window, {
+            duration: 2,
+            ease: 'power3.out',
+            scrollTo: { y: '#contact', offsetY: 0, autoKill: true },
+          });
+          break;
+        default:
+          gsap.to(window, {
+            duration: 2,
+            ease: 'power3.out',
+            scrollTo: { y: 0, offsetY: 0, autoKill: true },
+          });
+          break;
+      }
     }
   }
 
   handleGotToContact() {
     const el = document.querySelector('#contact');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (el)
+      gsap.to(window, {
+        duration: 2,
+        ease: 'power3.out',
+        scrollTo: { y: '#contact', offsetY: 0, autoKill: true },
+      });
     this.drawerOpen.set(false);
   }
 

@@ -13,17 +13,12 @@
     <div
       class="projects-stack relative w-full flex justify-center items-center"
     >
-      @for (project of allProjects(); track $index) {
+      @if(allProjects()){ @for (project of allProjects(); track $index) {
       <app-project-card
-        class="project-card p-8 bg-white w-full max-w-[800px]"
+        class="project-card lg:p-8 bg-white w-full max-w-[800px]"
         [project]="project"
       ></app-project-card>
-      } @for (project of allProjects(); track $index) {
-      <app-project-card
-        class="project-card p-8 bg-white w-full max-w-[800px]"
-        [project]="project"
-      ></app-project-card>
-      }
+      } }
     </div>
   </div>
 </section>

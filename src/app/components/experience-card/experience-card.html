@@ -13,7 +13,7 @@
     class="col-span-2 lg:col-span-1 pb-8 lg:pb-0 order-0 lg:order-1 flex justify-center"
   >
     <img
-      [src]="`http://localhost:1337${experience().image.formats?.medium?.url}`"
+      [src]="`${experience().image.formats?.medium?.url}`"
       [alt]="experience().institution"
       class="w-32 h-32 object-contain mt-4 bg-white rounded-full"
     />

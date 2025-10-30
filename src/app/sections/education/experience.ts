@@ -58,7 +58,7 @@ export interface MediaFormatInterface {
   styleUrl: './experience.css',
 })
 export class Experience implements AfterViewInit {
-  skillsSection = viewChild<ElementRef>('skillsSection');
+  experienceSection = viewChild<ElementRef>('experienceSection');
 
   myExperience = input.required<ExperienceInterface[]>();
   title = input('');
@@ -69,19 +69,34 @@ export class Experience implements AfterViewInit {
     if (!isPlatformBrowser(this.platformId)) return; // <-- evita errori in SSR
 
     gsap.registerPlugin(ScrollTrigger);
-    const section = this.skillsSection()?.nativeElement;
+    const section = this.experienceSection()?.nativeElement;
     if (!section) return;
     const sectionTitle = section.querySelector('h3');
+    // const experienceCard = section.querySelectorAll('.experience-card');
+
+    // console.log(experienceCard);
 
     gsap.from(sectionTitle, {
       autoAlpha: 0,
-      y: -100,
+      x: 500,
+      duration: 1,
+      ease: 'power3.out',
       scrollTrigger: {
         trigger: section,
-        start: '30% center',
+        start: 'top 80%',
         toggleActions: 'restart pause reverse pause',
         scrub: true,
       },
     });
+    // gsap.from([...experienceCard], {
+    //   autoAlpha: 0,
+    //   x: 1000,
+    //   scrollTrigger: {
+    //     trigger: section,
+    //     start: 'top 80%',
+    //     toggleActions: 'restart pause reverse pause',
+    //     scrub: true,
+    //   },
+    // });
   }
 }

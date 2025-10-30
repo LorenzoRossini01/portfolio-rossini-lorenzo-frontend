@@ -8,7 +8,7 @@ import { SkillInterface } from '../sections/skills/skills';
   providedIn: 'root',
 })
 export class StrapiService {
-  private baseUrl = 'http://localhost:1337/api';
+  private baseUrl = 'https://genuine-nurture-8d44b0e1dc.strapiapp.com/api';
 
   constructor(private http: HttpClient) {}
 

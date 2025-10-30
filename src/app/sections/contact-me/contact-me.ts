@@ -22,10 +22,11 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MarkdownPipe } from '../../pipes/markdown-pipe';
 import { ContactService } from '../../services/contact.service';
+import { SocialLinks } from '../../components/social-links/social-links';
 
 @Component({
   selector: 'app-contact-me',
-  imports: [Button, ReactiveFormsModule, MarkdownPipe],
+  imports: [Button, ReactiveFormsModule, MarkdownPipe, SocialLinks],
   templateUrl: './contact-me.html',
   styleUrl: './contact-me.css',
 })

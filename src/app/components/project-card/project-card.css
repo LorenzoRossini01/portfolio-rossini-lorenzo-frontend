@@ -1,0 +1,6 @@
+.hover-link-left {
+  background: linear-gradient(to left, #00000000, #00000075);
+}
+.hover-link-right {
+  background: linear-gradient(to right, #00000000, #00000075);
+}

@@ -4,7 +4,8 @@ import { switchMap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ContactService {
-  private apiUrl = 'http://localhost:1337/api/contact-messages';
+  private apiUrl =
+    'https://genuine-nurture-8d44b0e1dc.strapiapp.com/api/contact-messages';
 
   constructor(private http: HttpClient) {}
 

@@ -77,8 +77,6 @@ export class MyProjects implements OnInit {
 
     if (!section || cards.length === 0) return;
 
-    // kill eventuali trigger vecchi
-
     // inizializza stack
     cards.forEach((card, i) => {
       gsap.set(card, {

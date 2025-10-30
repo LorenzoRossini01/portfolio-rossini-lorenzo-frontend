@@ -1,19 +1,55 @@
-<div class="w-full">
-  <img
-    [src]="`http://localhost:1337${project().cover_image.formats?.medium?.url}`"
-    [alt]="project().title"
-    class="object-cover object-top w-full h-64 mb-4 rounded-lg"
-  />
-  <div>
-    <h6 class="capitalize font-semibold">{{ project().title }}</h6>
-    <p>{{ project().description_excerpt }}</p>
-    <div class="flex flex-col text-blue underline">
+<div class="w-full overflow-hidden rounded-lg">
+  <div class="relative group">
+    <img
+      [src]="project().cover_image.formats?.medium?.url"
+      [alt]="project().title"
+      class="object-cover object-top w-full h-30 lg:h-64 rounded-lg"
+    />
+
+    <!-- Overlay links -->
+    <div class="hidden lg:flex absolute inset-0 items-center justify-between">
       @if (project().repository_url) {
-
-      <a [href]="project().repository_url" target="_blank">Vedi la repo</a>
+      <a
+        [href]="project().repository_url"
+        target="_blank"
+        class="text-white w-[50%] h-full flex items-center justify-start hover-link-left font-semibold px-4 py-2 opacity-0 rounded-md hover:underline transition-opacity duration-300 hover:opacity-100"
+      >
+        <img class="w-10 h-10 invert" src="code.png" alt="code" />
+      </a>
       } @if (project().project_url) {
+      <a
+        [href]="project().project_url"
+        target="_blank"
+        class="text-white w-[50%] h-full flex items-center justify-end hover-link-right font-semibold px-4 py-2 opacity-0 rounded-md hover:underline transition-opacity duration-300 hover:opacity-100"
+      >
+        <img class="w-10 h-10 invert" src="eye.png" alt="view" />
+      </a>
+      }
+    </div>
+  </div>
 
-      <a [href]="project().project_url" target="_blank">Vedi il sito online</a>
+  <div class="mt-4">
+    <h6 class="capitalize font-semibold">{{ project().title }}</h6>
+    <p class="text-sm lg:text:lg">{{ project().description_excerpt }}</p>
+    <div class="lg:hidden flex flex-col items-start mt-4">
+      @if (project().repository_url) {
+      <a
+        [href]="project().repository_url"
+        target="_blank"
+        class="h-full flex items-center justify-start font-semibold underline"
+      >
+        <img class="w-5 h-5 mr-4" src="code.png" alt="code" />
+        View repository
+      </a>
+      } @if (project().project_url) {
+      <a
+        [href]="project().project_url"
+        target="_blank"
+        class="h-full flex items-center justify-end font-semibold underline"
+      >
+        <img class="w-5 h-5 mr-4" src="eye.png" alt="view" />
+        View live
+      </a>
       }
     </div>
   </div>

@@ -51,29 +51,7 @@
     </div>
     <div class="text-col col-span-1 flex flex-col gap-8 order-0 lg:order-1">
       <div [innerHTML]="contactText() | markdown"></div>
-
-      <div class="flex justify-between">
-        <a
-          href="https://www.linkedin.com/in/lorenzo-rossini-8b7245242/"
-          target="_blank"
-          ><img
-            class="w-15 h-15 object-contain"
-            src="linkedin-icon.png"
-            alt="LinkedIn"
-        /></a>
-        <a href="" target="_blank"
-          ><img
-            class="w-15 h-15 object-contain"
-            src="github-icon.png"
-            alt="GitHub    "
-        /></a>
-        <a href="" target="_blank"
-          ><img
-            class="w-15 h-15 object-contain"
-            src="envelope.png"
-            alt="Gmail    "
-        /></a>
-      </div>
+      <app-social-links></app-social-links>
     </div>
   </div>
 </section>

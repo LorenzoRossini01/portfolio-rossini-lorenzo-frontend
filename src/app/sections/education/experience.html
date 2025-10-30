@@ -1,11 +1,13 @@
-<section #experienceSection class="my-60">
+<section #experienceSection class="pt-60">
   <h3 class="text-4xl uppercase hightlight-full w-fit relative mx-auto mb-20">
     {{ title() }}
   </h3>
 
   <div class="experience-card-wrapper flex flex-col gap-16">
     @for (experience of myExperience(); track $index){
-    <app-experience-card [experience]="experience"></app-experience-card>
+    <div class="experience-card">
+      <app-experience-card [experience]="experience"></app-experience-card>
+    </div>
     }
   </div>
 </section>

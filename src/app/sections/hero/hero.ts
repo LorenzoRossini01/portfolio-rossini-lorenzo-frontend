@@ -50,7 +50,7 @@ export class Hero implements AfterViewInit {
     const letters = Array.from(section.querySelectorAll('.char'));
 
     // setup base
-    gsap.set(letters, { autoAlpha: 0 });
+    gsap.set(letters, { autoAlpha: 1 });
     gsap.set(downArrow, { autoAlpha: 0, y: 0 });
 
     // 1️⃣ animazione dei titoli
@@ -62,11 +62,11 @@ export class Hero implements AfterViewInit {
       },
     });
 
-    tl.to(letters, {
-      autoAlpha: 1,
+    tl.from(letters, {
+      autoAlpha: 0,
       ease: 'power3.out',
-      stagger: 0.05,
-      duration: 1.2,
+      stagger: 0.2,
+      duration: 1.5,
     });
 
     // 2️⃣ loop continuo della freccia
@@ -85,7 +85,7 @@ export class Hero implements AfterViewInit {
       start: 'center center',
       end: '+=600',
       scrub: true,
-      pin: true,
+      // pin: true,
       onEnter: () => {
         // ferma il loop
         arrowLoop.pause(0);

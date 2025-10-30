@@ -1,7 +1,7 @@
 <div class="flex flex-col justify-center w-full h-20 items-center skill-item">
   <img
     class="w-full h-full mb-4 object-contain"
-    [src]="`http://localhost:1337${skill().icon.url}`"
+    [src]="`${skill().icon.url}`"
     [alt]="skill().name"
   />
   <p class="uppercase font-semibold">{{ skill().name }}</p>
