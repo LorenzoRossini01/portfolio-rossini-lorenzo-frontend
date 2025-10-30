@@ -92,13 +92,13 @@ export class ContactMe implements AfterViewInit, OnDestroy {
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: '+=300',
+          end: '+=700',
           scrub: true,
           pin: pinWrapper,
           pinSpacing: true,
           anticipatePin: 1,
           refreshPriority: -1, // Calcola dopo altri ScrollTrigger
-          // markers: true,
+          markers: true,
           onRefresh: (self) => {
             console.log('Start:', self.start, 'End:', self.end);
           },
