@@ -41,7 +41,7 @@ export class ExperienceCard {
       scrollTrigger: {
         trigger: element,
         start: 'top 80%',
-        end: 'top 50%',
+        end: '+=200',
         scrub: true,
       },
     });
@@ -53,7 +53,7 @@ export class ExperienceCard {
       scrollTrigger: {
         trigger: element,
         start: 'top 80%',
-        end: 'top 50%',
+        end: '+=200',
         scrub: true,
       },
     });

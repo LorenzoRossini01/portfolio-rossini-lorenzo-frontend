@@ -83,7 +83,8 @@ export class Experience implements AfterViewInit {
       ease: 'power3.out',
       scrollTrigger: {
         trigger: section,
-        start: 'top 80%',
+        start: 'top center',
+        end: '+=200',
         toggleActions: 'restart pause reverse pause',
         scrub: true,
       },

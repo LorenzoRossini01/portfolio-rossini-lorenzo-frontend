@@ -83,7 +83,7 @@ export class Hero implements AfterViewInit {
     ScrollTrigger.create({
       trigger: section,
       start: 'center center',
-      end: '+=600',
+      end: '+=500',
       scrub: true,
       // pin: true,
       onEnter: () => {

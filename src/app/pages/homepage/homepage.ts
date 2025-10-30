@@ -3,6 +3,7 @@ import {
   Component,
   inject,
   Inject,
+  OnDestroy,
   OnInit,
   PLATFORM_ID,
   signal,
@@ -22,6 +23,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { log } from 'console';
 import { isPlatformBrowser } from '@angular/common';
 import { StrapiService } from '../../services/strapi.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-homepage',
@@ -29,8 +31,10 @@ import { StrapiService } from '../../services/strapi.service';
   templateUrl: './homepage.html',
   styleUrl: './homepage.css',
 })
-export class Homepage implements OnInit, AfterViewInit {
+export class Homepage implements OnInit, AfterViewInit, OnDestroy {
   private strapiService = inject(StrapiService);
+  private destroy$ = new Subject<void>();
+
   ngOnInit(): void {
     this.fetchAboutText();
     this.fetchTechSkills();
@@ -41,54 +45,72 @@ export class Homepage implements OnInit, AfterViewInit {
   }
 
   fetchAboutText() {
-    this.strapiService.getAboutMeText().subscribe({
-      next: (value) => {
-        this.aboutText.set(value.data.text);
-      },
-      error: (err) => {},
-    });
+    this.strapiService
+      .getAboutMeText()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.aboutText.set(value.data.text);
+        },
+        error: (err) => {},
+      });
   }
 
   fetchTechSkills() {
-    this.strapiService.getTechSkills().subscribe({
-      next: (value) => {
-        this.techSkills.set(value.data);
-      },
-      error: (err) => {},
-    });
+    this.strapiService
+      .getTechSkills()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.techSkills.set(value.data);
+        },
+        error: (err) => {},
+      });
   }
   fetchEducations() {
-    this.strapiService.getEducations().subscribe({
-      next: (value) => {
-        this.myEducation.set(value.data);
-      },
-      error: (err) => {},
-    });
+    this.strapiService
+      .getEducations()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.myEducation.set(value.data);
+        },
+        error: (err) => {},
+      });
   }
 
   fetchContactText() {
-    this.strapiService.getContactMeText().subscribe({
-      next: (value) => {
-        this.contactText.set(value.data.text);
-      },
-      error: (err) => {},
-    });
+    this.strapiService
+      .getContactMeText()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.contactText.set(value.data.text);
+        },
+        error: (err) => {},
+      });
   }
   fetchCertifications() {
-    this.strapiService.getCertifications().subscribe({
-      next: (value) => {
-        this.myCertification.set(value.data);
-      },
-      error: (err) => {},
-    });
+    this.strapiService
+      .getCertifications()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.myCertification.set(value.data);
+        },
+        error: (err) => {},
+      });
   }
   fetchPreviousJobs() {
-    this.strapiService.getPreviousJobs().subscribe({
-      next: (value) => {
-        this.myPreviousJobs.set(value.data);
-      },
-      error: (err) => {},
-    });
+    this.strapiService
+      .getPreviousJobs()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.myPreviousJobs.set(value.data);
+        },
+        error: (err) => {},
+      });
   }
 
   aboutText = signal<string>('');
@@ -156,5 +178,9 @@ export class Homepage implements OnInit, AfterViewInit {
         },
       }
     );
+  }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ExperienceInterface } from '../sections/education/experience';
 import { SkillInterface } from '../sections/skills/skills';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StrapiService {
-  private baseUrl = 'https://genuine-nurture-8d44b0e1dc.strapiapp.com/api';
+  private readonly baseUrl = `${environment.apiBaseUrl}/api`;
 
   constructor(private http: HttpClient) {}
 

@@ -8,6 +8,8 @@ import {
   signal,
   inject,
   OnInit,
+  AfterViewInit,
+  OnDestroy,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ProjectCard } from '../../components/project-card/project-card';
@@ -15,6 +17,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { StrapiService } from '../../services/strapi.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-my-projects',
@@ -22,21 +25,30 @@ import { StrapiService } from '../../services/strapi.service';
   templateUrl: './my-projects.html',
   styleUrls: ['./my-projects.css'],
 })
-export class MyProjects implements OnInit {
+export class MyProjects implements OnInit, AfterViewInit, OnDestroy {
   private strapiService = inject(StrapiService);
   @ViewChild('myProject', { static: true }) myProject!: ElementRef;
+  private destroy$ = new Subject<void>();
 
   ngOnInit() {
     this.fetchProjects();
   }
 
   fetchProjects() {
-    this.strapiService.getProjects().subscribe({
-      next: (value) => {
-        this.allProjects.set(value.data);
-      },
-      error: (err) => {},
-    });
+    this.strapiService
+      .getProjects()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (value) => {
+          this.allProjects.set(value.data);
+        },
+        error: (err) => {},
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   categories = signal('Web Development');
