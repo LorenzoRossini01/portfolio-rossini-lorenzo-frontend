@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   Component,
+  DestroyRef,
   inject,
   OnDestroy,
   OnInit,
@@ -20,7 +21,8 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { StrapiService } from '../../services/strapi.service';
-import { Subject, takeUntil } from 'rxjs';
+import { catchError, forkJoin, of, Subject, takeUntil, tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-homepage',
@@ -30,110 +32,76 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class Homepage implements OnInit, AfterViewInit, OnDestroy {
   private strapiService = inject(StrapiService);
-  private destroy$ = new Subject<void>();
+  private destroyRef = inject(DestroyRef);
 
-  ngOnInit(): void {
-    this.fetchAboutText();
-    this.fetchTechSkills();
-    this.fetchEducations();
-    this.fetchCertifications();
-    this.fetchPreviousJobs();
-    this.fetchContactText();
-    this.fetchProjects();
-  }
-
-  fetchAboutText() {
-    this.strapiService
-      .getAboutMeText()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
-          this.aboutText.set(value.data.text);
-        },
-        error: (err) => {},
-      });
-  }
-
-  fetchTechSkills() {
-    this.strapiService
-      .getTechSkills()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
-          this.techSkills.set(value.data);
-        },
-        error: (err) => {},
-      });
-  }
-  fetchEducations() {
-    this.strapiService
-      .getEducations()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
-          this.myEducation.set(value.data);
-        },
-        error: (err) => {},
-      });
-  }
-
-  fetchContactText() {
-    this.strapiService
-      .getContactMeText()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
-          this.contactText.set(value.data.text);
-        },
-        error: (err) => {},
-      });
-  }
-  fetchCertifications() {
-    this.strapiService
-      .getCertifications()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
-          this.myCertification.set(value.data);
-        },
-        error: (err) => {},
-      });
-  }
-  fetchPreviousJobs() {
-    this.strapiService
-      .getPreviousJobs()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
-          this.myPreviousJobs.set(value.data);
-        },
-        error: (err) => {},
-      });
-  }
-
-  fetchProjects() {
-    this.strapiService
-      .getProjects()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (value) => {
-          this.allProjects.set(value.data);
-        },
-        error: (err) => {},
-      });
-  }
+  loadingProgress = signal<number>(0);
+  isLoading = signal<boolean>(true);
 
   aboutText = signal<string>('');
-
   techSkills = signal<SkillInterface[]>([]);
-
   myEducation = signal<ExperienceInterface[]>([]);
-
   myCertification = signal<ExperienceInterface[]>([]);
-
   myPreviousJobs = signal<ExperienceInterface[]>([]);
   contactText = signal<string>('');
   allProjects = signal<any[]>([]);
+
+  ngOnInit(): void {
+    this.loadAllContent();
+  }
+
+  private loadAllContent() {
+    const requests = [
+      this.strapiService.getAboutMeText().pipe(
+        tap((res) => this.aboutText.set(res.data.text)),
+        catchError(() => of(null))
+      ),
+      this.strapiService.getTechSkills().pipe(
+        tap((res) => this.techSkills.set(res.data)),
+        catchError(() => of(null))
+      ),
+      this.strapiService.getEducations().pipe(
+        tap((res) => this.myEducation.set(res.data)),
+        catchError(() => of(null))
+      ),
+      this.strapiService.getCertifications().pipe(
+        tap((res) => this.myCertification.set(res.data)),
+        catchError(() => of(null))
+      ),
+      this.strapiService.getPreviousJobs().pipe(
+        tap((res) => this.myPreviousJobs.set(res.data)),
+        catchError(() => of(null))
+      ),
+      this.strapiService.getContactMeText().pipe(
+        tap((res) => this.contactText.set(res.data.text)),
+        catchError(() => of(null))
+      ),
+      this.strapiService.getProjects().pipe(
+        tap((res) => this.allProjects.set(res.data)),
+        catchError(() => of(null))
+      ),
+    ];
+
+    const total = requests.length;
+    let completed = 0;
+
+    requests.forEach((req) => {
+      req
+        .pipe(
+          tap(() => {
+            completed++;
+            this.loadingProgress.set(Math.floor((completed / total) * 100));
+          })
+        )
+        .subscribe();
+    });
+
+    forkJoin(requests)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.loadingProgress.set(100);
+        setTimeout(() => this.isLoading.set(false), 300);
+      });
+  }
 
   handleDownloadCV() {
     window.open('assets/documents/CV_Lorenzo_Rossini.pdf', '_blank');
@@ -215,7 +183,7 @@ export class Homepage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    // this.destroy$.next();
+    // this.destroy$.complete();
   }
 }

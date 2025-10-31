@@ -64,7 +64,7 @@ export class Header {
           gsap.to(window, {
             duration: 2,
             ease: 'power3.out',
-            scrollTo: { y: '#contact', offsetY: 0, autoKill: true },
+            scrollTo: { y: '#contact', offsetY: -1000, autoKill: true },
           });
           break;
         default:
@@ -84,7 +84,7 @@ export class Header {
       gsap.to(window, {
         duration: 2,
         ease: 'power3.out',
-        scrollTo: { y: '#contact', offsetY: 0, autoKill: true },
+        scrollTo: { y: '#contact', offsetY: -1000, autoKill: true },
       });
     this.drawerOpen.set(false);
   }

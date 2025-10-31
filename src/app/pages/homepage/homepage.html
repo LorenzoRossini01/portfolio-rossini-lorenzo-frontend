@@ -37,3 +37,11 @@
 }
 
 <app-contact-me [contactText]="contactText()"></app-contact-me>
+
+@if (isLoading()) {
+<div class="loader-overlay">
+  <div class="loader"></div>
+  <div class="loader-bar"></div>
+  <p>{{ loadingProgress() }}%</p>
+</div>
+}
