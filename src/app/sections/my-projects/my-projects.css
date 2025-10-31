@@ -1,16 +1,25 @@
-.projects-stack {
+section#projects {
   position: relative;
-  height: 100vh; /* o quanto vuoi che duri la sezione visivamente */
-  overflow: visible;
+  padding: 7.5rem 2rem;
 }
 
-.project-card {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+@media (min-width: 1024px) {
+  section#projects {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+.pin-wrapper {
+  height: 100%;
   width: 100%;
-  max-width: 800px;
-  opacity: 0;
-  pointer-events: none; /* così non interferiscono col click */
+}
+
+.projects-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

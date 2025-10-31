@@ -99,9 +99,9 @@ export class ContactMe implements AfterViewInit, OnDestroy {
           anticipatePin: 1,
           refreshPriority: -1, // Calcola dopo altri ScrollTrigger
           // markers: true,
-          onRefresh: (self) => {
-            console.log('Start:', self.start, 'End:', self.end);
-          },
+          // onRefresh: (self) => {
+          //   console.log('Start:', self.start, 'End:', self.end);
+          // },
         },
       });
 

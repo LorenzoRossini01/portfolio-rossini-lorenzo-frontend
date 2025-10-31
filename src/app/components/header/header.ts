@@ -57,7 +57,7 @@ export class Header {
           gsap.to(window, {
             duration: 2,
             ease: 'power3.out',
-            scrollTo: { y: '#projects', offsetY: 0, autoKill: true },
+            scrollTo: { y: '#projects', offsetY: -100, autoKill: true },
           });
           break;
         case '#contact':
