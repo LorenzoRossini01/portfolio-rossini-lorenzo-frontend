@@ -13,12 +13,19 @@
   </div>
 
   <div
-    class="col-span-2 lg:col-span-1 pb-8 lg:pb-0 order-0 lg:order-1 flex justify-center"
+    class="relative col-span-2 lg:col-span-1 pb-8 lg:pb-0 order-0 lg:order-1 flex justify-center"
   >
+    @if (!imageLoaded()) {
+
+    <div
+      class="absolute -top-8 bottom-0 left-10 right-10 bg-gray-200 animate-pulse"
+    ></div>
+    }
     <img
       [src]="`${experience().image.formats?.medium?.url}`"
       [alt]="experience().institution"
-      class="w-32 h-32 object-contain mt-4 bg-white rounded-full"
+      class="w-32 h-32 object-contain mt-4 bg-white"
+      (load)="imageLoaded.set(true)"
     />
   </div>
 </div>

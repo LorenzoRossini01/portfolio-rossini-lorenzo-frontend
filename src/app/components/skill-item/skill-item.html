@@ -1,8 +1,17 @@
-<div class="flex flex-col justify-center w-full h-20 items-center skill-item">
+<div
+  class="flex flex-col justify-center relative w-full h-20 items-center skill-item"
+>
+  @if (!imageLoaded()) {
+
+  <div
+    class="absolute -top-8 bottom-0 left-10 right-10 bg-gray-200 animate-pulse"
+  ></div>
+  }
   <img
     class="w-full h-full mb-4 object-contain"
     [src]="`${skill().icon.url}`"
     [alt]="skill().name"
+    (load)="imageLoaded.set(true)"
   />
   <p class="uppercase font-semibold">{{ skill().name }}</p>
 </div>

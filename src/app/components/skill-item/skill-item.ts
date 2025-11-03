@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, input } from '@angular/core';
+import { AfterViewInit, Component, input, signal } from '@angular/core';
 import { SkillInterface } from '../../sections/skills/skills';
 
 import { gsap } from 'gsap';
@@ -11,6 +11,7 @@ import { gsap } from 'gsap';
 })
 export class SkillItem implements AfterViewInit {
   skill = input.required<SkillInterface>();
+  imageLoaded = signal<boolean>(false);
 
   ngAfterViewInit(): void {}
 }
