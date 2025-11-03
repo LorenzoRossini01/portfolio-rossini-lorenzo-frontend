@@ -1,9 +1,16 @@
 <div class="w-full overflow-hidden rounded-lg">
   <div class="relative group">
+    @if (!imageLoaded()) {
+
+    <div
+      class="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 animate-pulse"
+    ></div>
+    }
     <img
       [src]="project().cover_image.formats?.medium?.url"
       [alt]="project().title"
       class="object-cover object-top w-full h-30 lg:h-64 rounded-lg"
+      (load)="imageLoaded.set(true)"
     />
 
     <!-- Overlay links -->

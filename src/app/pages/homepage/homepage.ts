@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   Component,
-  DestroyRef,
   inject,
   OnDestroy,
   OnInit,
@@ -24,8 +23,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { StrapiService } from '../../services/strapi.service';
-import { catchError, forkJoin, of, Subject, takeUntil, tap } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-homepage',
@@ -35,10 +33,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class Homepage implements OnInit, AfterViewInit, OnDestroy {
   private strapiService = inject(StrapiService);
-  private destroyRef = inject(DestroyRef);
   private destroy$ = new Subject<void>();
 
-  loadingProgress = signal<number>(0);
   isLoading = signal<boolean>(true);
 
   aboutText = signal<string>('');
@@ -50,79 +46,43 @@ export class Homepage implements OnInit, AfterViewInit, OnDestroy {
   allProjects = signal<ProjectInterface[]>([]);
 
   ngOnInit(): void {
-    this.loadAllContent();
+    this.loadHeroAndAbout();
+    setTimeout(() => {
+      this.loadRemainingSections();
+    }, 1000);
   }
 
-  private loadAllContent() {
-    const ops = [
-      this.strapiService.getAboutMeText().pipe(
-        tap((res) => this.aboutText.set(res.data?.text)),
-        catchError(() => of(null)),
-        tap(() => this.incrementProgress())
-      ),
-      this.strapiService.getTechSkills().pipe(
-        tap((res) => this.techSkills.set(res.data)),
-        catchError(() => of(null)),
-        tap(() => this.incrementProgress())
-      ),
-      this.strapiService.getEducations().pipe(
-        tap((res) => this.myEducation.set(res.data)),
-        catchError(() => of(null)),
-        tap(() => this.incrementProgress())
-      ),
-      this.strapiService.getCertifications().pipe(
-        tap((res) => this.myCertification.set(res.data)),
-        catchError(() => of(null)),
-        tap(() => this.incrementProgress())
-      ),
-      this.strapiService.getPreviousJobs().pipe(
-        tap((res) => this.myPreviousJobs.set(res.data)),
-        catchError(() => of(null)),
-        tap(() => this.incrementProgress())
-      ),
-      this.strapiService.getContactMeText().pipe(
-        tap((res) => this.contactText.set(res.data?.text)),
-        catchError(() => of(null)),
-        tap(() => this.incrementProgress())
-      ),
-      this.strapiService.getProjects().pipe(
-        tap((res) => this.allProjects.set(res.data)),
-        catchError(() => of(null)),
-        tap(() => this.incrementProgress())
-      ),
-    ];
-
-    // reset progress
-    this.loadingProgress.set(0);
-    this.isLoading.set(true);
-
-    // inizializza contatore interno
-    this._loadTotal = ops.length; // proprietà privata nel componente
-    this._loadCompleted = 0; // proprietà privata nel componente
-
-    forkJoin(ops)
+  private loadHeroAndAbout() {
+    this.strapiService
+      .getAboutMeText()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => {
-          this.loadingProgress.set(100);
-          setTimeout(() => this.isLoading.set(false), 300);
-        },
-        error: () => {
-          // anche in caso di errore vogliamo fermare loader
-          this.loadingProgress.set(100);
+        next: (res) => {
+          this.aboutText.set(res.data.text);
           this.isLoading.set(false);
         },
       });
   }
 
-  // helper per aggiornare progress bar in modo centralizzato
-  private _loadTotal = 0;
-  private _loadCompleted = 0;
-
-  private incrementProgress() {
-    this._loadCompleted++;
-    const pct = Math.floor((this._loadCompleted / this._loadTotal) * 100);
-    this.loadingProgress.set(pct);
+  private loadRemainingSections() {
+    forkJoin([
+      this.strapiService.getTechSkills(),
+      this.strapiService.getEducations(),
+      this.strapiService.getCertifications(),
+      this.strapiService.getPreviousJobs(),
+      this.strapiService.getProjects(),
+      this.strapiService.getContactMeText(),
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([skills, edu, certs, jobs, projects, contact]) => {
+        this.techSkills.set(skills.data);
+        this.myEducation.set(edu.data);
+        this.myCertification.set(certs.data);
+        this.myPreviousJobs.set(jobs.data);
+        this.allProjects.set(projects.data);
+        this.contactText.set(contact.data.text);
+        this.isLoading.set(false);
+      });
   }
 
   handleDownloadCV() {

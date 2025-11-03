@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { ProjectInterface } from '../../sections/my-projects/my-projects';
 
 @Component({
@@ -9,4 +9,5 @@ import { ProjectInterface } from '../../sections/my-projects/my-projects';
 })
 export class ProjectCard {
   project = input.required<ProjectInterface>();
+  imageLoaded = signal<boolean>(false);
 }

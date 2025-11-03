@@ -1,4 +1,4 @@
-import { Component, ElementRef, input, ViewChild } from '@angular/core';
+import { Component, ElementRef, input, signal, ViewChild } from '@angular/core';
 import { ExperienceInterface } from '../../sections/education/experience';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -12,6 +12,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 export class ExperienceCard {
   experience = input.required<ExperienceInterface>();
   @ViewChild('card', { static: true }) card!: ElementRef;
+  imageLoaded = signal<boolean>(false);
 
   ngAfterViewInit(): void {
     gsap.registerPlugin(ScrollTrigger);
