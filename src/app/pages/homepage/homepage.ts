@@ -23,7 +23,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { StrapiService } from '../../services/strapi.service';
-import { forkJoin, Subject } from 'rxjs';
+import { forkJoin, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-homepage',
@@ -53,12 +53,15 @@ export class Homepage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadHeroAndAbout() {
-    this.strapiService.getAboutMeText().subscribe({
-      next: (res) => {
-        this.aboutText.set(res.data.text);
-        this.isLoading.set(false);
-      },
-    });
+    this.strapiService
+      .getAboutMeText()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.aboutText.set(res.data.text);
+          this.isLoading.set(false);
+        },
+      });
   }
 
   private loadRemainingSections() {
@@ -69,15 +72,17 @@ export class Homepage implements OnInit, AfterViewInit, OnDestroy {
       this.strapiService.getPreviousJobs(),
       this.strapiService.getProjects(),
       this.strapiService.getContactMeText(),
-    ]).subscribe(([skills, edu, certs, jobs, projects, contact]) => {
-      this.techSkills.set(skills.data);
-      this.myEducation.set(edu.data);
-      this.myCertification.set(certs.data);
-      this.myPreviousJobs.set(jobs.data);
-      this.allProjects.set(projects.data);
-      this.contactText.set(contact.data.text);
-      this.isLoading.set(false);
-    });
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([skills, edu, certs, jobs, projects, contact]) => {
+        this.techSkills.set(skills.data);
+        this.myEducation.set(edu.data);
+        this.myCertification.set(certs.data);
+        this.myPreviousJobs.set(jobs.data);
+        this.allProjects.set(projects.data);
+        this.contactText.set(contact.data.text);
+        this.isLoading.set(false);
+      });
   }
 
   handleDownloadCV() {
