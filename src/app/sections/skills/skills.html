@@ -6,7 +6,7 @@
   <div
     class="grid items-center justify-center grid-cols-3 lg:grid-cols-5 gap-16"
   >
-    @for (skill of mySkills(); track $index){
+    @for (skill of mySkillsOrdered(); track $index){
     <app-skill-item [skill]="skill"></app-skill-item>
     }
   </div>

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ExperienceInterface } from '../sections/education/experience';
 import { SkillInterface } from '../sections/skills/skills';
 import { environment } from '../../environments/environment';
+import { ProjectInterface } from '../sections/my-projects/my-projects';
 
 @Injectable({
   providedIn: 'root',
@@ -44,7 +45,9 @@ export class StrapiService {
       `${this.baseUrl}/contact-me-text`
     );
   }
-  getProjects(): Observable<{ data: any }> {
-    return this.http.get<{ data: any }>(`${this.baseUrl}/projects?populate=*`);
+  getProjects(): Observable<{ data: ProjectInterface[] }> {
+    return this.http.get<{ data: ProjectInterface[] }>(
+      `${this.baseUrl}/projects?populate=*`
+    );
   }
 }

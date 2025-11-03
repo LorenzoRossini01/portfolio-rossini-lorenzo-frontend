@@ -5,6 +5,7 @@ import {
   viewChild,
   AfterViewInit,
   OnDestroy,
+  computed,
 } from '@angular/core';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -15,6 +16,7 @@ export interface SkillInterface {
   name: string;
   icon: MediaInterface;
   level?: number;
+  order?: number;
 }
 
 @Component({
@@ -26,6 +28,17 @@ export interface SkillInterface {
 export class Skills implements AfterViewInit, OnDestroy {
   skillsSection = viewChild<ElementRef>('skillsSection');
   mySkills = input<SkillInterface[]>([]);
+
+  mySkillsOrdered = computed<SkillInterface[]>(() => {
+    // copy the array to avoid mutating the original and handle undefined order values
+    return this.mySkills()
+      .slice()
+      .sort((a, b) => {
+        const oa = a.order ?? 0;
+        const ob = b.order ?? 0;
+        return oa - ob;
+      });
+  });
 
   private scrollTriggerInstance?: ScrollTrigger;
 

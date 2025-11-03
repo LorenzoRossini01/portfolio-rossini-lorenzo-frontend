@@ -11,7 +11,10 @@ import { Hero } from '../../sections/hero/hero';
 import { AboutMe } from '../../sections/about-me/about-me';
 import { SkillInterface, Skills } from '../../sections/skills/skills';
 import { ContactMe } from '../../sections/contact-me/contact-me';
-import { MyProjects } from '../../sections/my-projects/my-projects';
+import {
+  MyProjects,
+  ProjectInterface,
+} from '../../sections/my-projects/my-projects';
 import {
   Experience,
   ExperienceInterface,
@@ -33,6 +36,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class Homepage implements OnInit, AfterViewInit, OnDestroy {
   private strapiService = inject(StrapiService);
   private destroyRef = inject(DestroyRef);
+  private destroy$ = new Subject<void>();
 
   loadingProgress = signal<number>(0);
   isLoading = signal<boolean>(true);
@@ -43,64 +47,82 @@ export class Homepage implements OnInit, AfterViewInit, OnDestroy {
   myCertification = signal<ExperienceInterface[]>([]);
   myPreviousJobs = signal<ExperienceInterface[]>([]);
   contactText = signal<string>('');
-  allProjects = signal<any[]>([]);
+  allProjects = signal<ProjectInterface[]>([]);
 
   ngOnInit(): void {
     this.loadAllContent();
   }
 
   private loadAllContent() {
-    const requests = [
+    const ops = [
       this.strapiService.getAboutMeText().pipe(
-        tap((res) => this.aboutText.set(res.data.text)),
-        catchError(() => of(null))
+        tap((res) => this.aboutText.set(res.data?.text)),
+        catchError(() => of(null)),
+        tap(() => this.incrementProgress())
       ),
       this.strapiService.getTechSkills().pipe(
         tap((res) => this.techSkills.set(res.data)),
-        catchError(() => of(null))
+        catchError(() => of(null)),
+        tap(() => this.incrementProgress())
       ),
       this.strapiService.getEducations().pipe(
         tap((res) => this.myEducation.set(res.data)),
-        catchError(() => of(null))
+        catchError(() => of(null)),
+        tap(() => this.incrementProgress())
       ),
       this.strapiService.getCertifications().pipe(
         tap((res) => this.myCertification.set(res.data)),
-        catchError(() => of(null))
+        catchError(() => of(null)),
+        tap(() => this.incrementProgress())
       ),
       this.strapiService.getPreviousJobs().pipe(
         tap((res) => this.myPreviousJobs.set(res.data)),
-        catchError(() => of(null))
+        catchError(() => of(null)),
+        tap(() => this.incrementProgress())
       ),
       this.strapiService.getContactMeText().pipe(
-        tap((res) => this.contactText.set(res.data.text)),
-        catchError(() => of(null))
+        tap((res) => this.contactText.set(res.data?.text)),
+        catchError(() => of(null)),
+        tap(() => this.incrementProgress())
       ),
       this.strapiService.getProjects().pipe(
         tap((res) => this.allProjects.set(res.data)),
-        catchError(() => of(null))
+        catchError(() => of(null)),
+        tap(() => this.incrementProgress())
       ),
     ];
 
-    const total = requests.length;
-    let completed = 0;
+    // reset progress
+    this.loadingProgress.set(0);
+    this.isLoading.set(true);
 
-    requests.forEach((req) => {
-      req
-        .pipe(
-          tap(() => {
-            completed++;
-            this.loadingProgress.set(Math.floor((completed / total) * 100));
-          })
-        )
-        .subscribe();
-    });
+    // inizializza contatore interno
+    this._loadTotal = ops.length; // proprietà privata nel componente
+    this._loadCompleted = 0; // proprietà privata nel componente
 
-    forkJoin(requests)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.loadingProgress.set(100);
-        setTimeout(() => this.isLoading.set(false), 300);
+    forkJoin(ops)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.loadingProgress.set(100);
+          setTimeout(() => this.isLoading.set(false), 300);
+        },
+        error: () => {
+          // anche in caso di errore vogliamo fermare loader
+          this.loadingProgress.set(100);
+          this.isLoading.set(false);
+        },
       });
+  }
+
+  // helper per aggiornare progress bar in modo centralizzato
+  private _loadTotal = 0;
+  private _loadCompleted = 0;
+
+  private incrementProgress() {
+    this._loadCompleted++;
+    const pct = Math.floor((this._loadCompleted / this._loadTotal) * 100);
+    this.loadingProgress.set(pct);
   }
 
   handleDownloadCV() {
@@ -182,8 +204,9 @@ export class Homepage implements OnInit, AfterViewInit, OnDestroy {
       ScrollTrigger.refresh();
     });
   }
+
   ngOnDestroy(): void {
-    // this.destroy$.next();
-    // this.destroy$.complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

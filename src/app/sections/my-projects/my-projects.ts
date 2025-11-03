@@ -3,9 +3,6 @@ import {
   ElementRef,
   ViewChild,
   signal,
-  inject,
-  OnInit,
-  AfterViewInit,
   OnDestroy,
   input,
   effect,
@@ -14,8 +11,23 @@ import { ProjectCard } from '../../components/project-card/project-card';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
-import { StrapiService } from '../../services/strapi.service';
-import { Subject, takeUntil } from 'rxjs';
+import { MediaInterface } from '../education/experience';
+import { SkillInterface } from '../skills/skills';
+
+export interface ProjectInterface {
+  client: string;
+  cover_image: MediaInterface;
+  description: string;
+  description_excerpt: string;
+  gallery: MediaInterface[];
+  id: number;
+  project_type: string;
+  project_url: string;
+  repository_url: string;
+  slug: string;
+  tech_skill: SkillInterface[];
+  title: string;
+}
 
 @Component({
   selector: 'app-my-projects',
@@ -26,7 +38,7 @@ import { Subject, takeUntil } from 'rxjs';
 export class MyProjects implements OnDestroy {
   @ViewChild('myProject', { static: true }) myProject!: ElementRef;
 
-  allProjects = input<any[]>([]);
+  allProjects = input<ProjectInterface[]>([]);
   categories = signal('Web Development');
 
   constructor() {
@@ -34,6 +46,7 @@ export class MyProjects implements OnDestroy {
 
     effect(() => {
       const projects = this.allProjects();
+      console.log(projects);
 
       ScrollTrigger.getAll().forEach((st) => {
         if (st.vars.trigger === this.myProject?.nativeElement) {
